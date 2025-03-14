@@ -6,14 +6,13 @@
  * Requires at least: 5.2
  * Requires PHP: 8.2.0
  * Author: Angela Hornung
- * Prefix: dp
+ * Prefix: db
  */
 
 /* variables & objects */
+require_once(__DIR__ . '/Util/Db/DbTableManager.php');
 
 /* Plugin Activation & Installation Hooks */
-
-use docport\util\db\dpTableManager;
 
 function activation() {
     dp_init();
@@ -30,10 +29,10 @@ register_uninstall_hook(__FILE__, 'dp_uninstall');
 function dp_init() {
     //check db tables
 	try{
-		$dpTableManager = new dpTableManager();
+		$dpTableManager = new DbTableManager();
 		$dpTableManager->initTables();
 	} catch (\Exception $e) {
-		//todo impliment cleaner and more proper error reporting
+		//todo implement cleaner and more proper error reporting
 		var_dump($e->getMessage());
 	}
 }

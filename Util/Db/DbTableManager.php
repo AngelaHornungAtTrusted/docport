@@ -1,6 +1,5 @@
 <?php
-namespace docport\util\db;
-class dpTableManager
+class DbTableManager
 {
 
     protected const PREFIX = 'dp_';
@@ -20,12 +19,13 @@ class dpTableManager
         cat_id mediumint(9) NOT NULL,
         active tinyint(1) DEFAULT '0',
         create_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        update_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL
+        update_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         PRIMARY KEY  (id)
         ) $charset_collate;";
 
+        //require once is for dbDelta
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta($sql);
+        dbDelta($sql, true);
     }
 }
 
