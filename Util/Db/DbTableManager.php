@@ -1,11 +1,11 @@
 <?php
+
+use JetBrains\PhpStorm\NoReturn;
+
 class DbTableManager
 {
 
-    protected const PREFIX = 'dp_';
-
-    public function initTables()
-    {
+	#[NoReturn] public function initTables(): void {
         global $wpdb;
 
         $charset_collate = $wpdb->get_charset_collate();
@@ -39,7 +39,7 @@ class DbTableManager
 		dbDelta($catTable);
     }
 
-	public function exportTables() : void
+	#[NoReturn] public function exportTables() : void
 	{
 		global $wpdb;
 		$tables_to_export = array(
@@ -84,6 +84,9 @@ class DbTableManager
 
 	public function delTables(){
 		global $wpdb;
+
+		$wpdb->query("DROP TABLE IF EXISTS dp_documents");
+		$wpdb->query("DROP TABLE IF EXISTS dp_document_categories");
 	}
 }
 
