@@ -50,7 +50,7 @@ function docport_menu() {
 function docport_page_content() {
     ?>
     <div class="wrap">
-		<?php include( plugin_dir_path( __FILE__ ) . 'Admin/admin.phtml' ); ?>
+		<?php include( plugin_dir_path( __FILE__ ) . 'Admin/admin.php' ); ?>
     </div>
 	<?php
 }
@@ -77,6 +77,9 @@ function my_plugin_enqueue_admin_scripts($hook): void {
 		'1.0', // Version number (optional, but recommended for cache busting)
 		false // Load in the footer (true) or header (false)
 	);
+
+	wp_enqueue_script('toastr', plugin_dir_url( __FILE__ ) . 'Assets/toastr/toastr.js', array('jquery'));
+    wp_enqueue_style('toastr', plugin_dir_url( __FILE__ ) . 'Assets/toastr/build/toastr.css');
 
 	//plugins page specific javascript
     if ('plugins.php' === $hook) {
