@@ -1,15 +1,35 @@
 (function($) {
 
-    let $cForm, $dForm;
+    let $cForm, $dForm, $cTable;
 
-    const formInit = function() {
-        //set form vars
+    const pageInit = function() {
+        //set page vars
         $cForm = $('#dp-cat-form');
         $dForm = $('#dp-doc-form');
+        $cTable = $('#dp-cat-table');
 
+        //grab categories
+        grabCategories();
         //call form handlers
         handleCategoryForm();
         handleDocumentForm();
+    }
+
+    const grabCategories = function () {
+        let promise = $.ajax({
+            url: $cTable.data('loader'),
+            type: 'GET',
+            data: {},
+        }).done(function (response, s, r) {
+            console.log(response);
+            console.log(s);
+            if (s === 'success') {
+                toastr.success('Success');
+            } else {
+                toastr.error('Error');
+            }
+        }).always(function (response, s, r) {
+        });
     }
 
     const handleCategoryForm = function() {
@@ -20,64 +40,32 @@
 
             submitHandler: function (f, e) {
                 e.preventDefault();
-                console.log(e);
                 let validator = this;
                 let promise = $.ajax({
                     url: $cForm.prop('action'),
                     type: 'post',
                     data: $cForm.serializeObject(),
                 }).done(function (response, s, r) {
-                    if (typeof response.success !== 'undefined' && response.success) {
+                    if (s === 'success') {
                         toastr.success('Success');
-                    } else if (typeof response.success !== 'undefined' && response.errors.length) {
-                        toastr.error(response.errors);
-                    } else if (typeof response.success !== 'undefined' && response.message) {
-                        toastr.error(response.message);
                     } else {
-                        toastr.error(response.message);
+                        toastr.error('Error');
                     }
                 }).fail(function () {
                     toastr.error('Unknown Error');
                 }).always(function () {
+                    $cForm.children('input').val('');
                 });
             }
         });
     }
 
     const handleDocumentForm = function() {
-        $dForm.validate({
-            focusInvalid: false,
-            rules: {},
-            message: {},
-
-            submitHandler: function (f, e) {
-                e.preventDefault();
-                console.log(e);
-                let validator = this;
-                let promise = $.ajax({
-                    url: $dForm.prop('action'),
-                    type: 'post',
-                    data: $dForm.serializeObject(),
-                }).done(function (response, s, r) {
-                    if (typeof response.success !== 'undefined' && response.success) {
-                        toastr.success('Success');
-                    } else if (typeof response.success !== 'undefined' && response.errors.length) {
-                        toastr.error(response.errors);
-                    } else if (typeof response.success !== 'undefined' && response.message) {
-                        toastr.error(response.message);
-                    } else {
-                        toastr.error(response.message);
-                    }
-                }).fail(function () {
-                    toastr.error('Unknown Error');
-                }).always(function () {
-                });
-            }
-        });
+        //todo implement document handling
     }
 
     $(document).ready(function() {
-        formInit();
+        pageInit();
     });
 
     // secret sauce method, thanks Paul Colella

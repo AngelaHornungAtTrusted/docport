@@ -1,29 +1,69 @@
 <?php
 
+use Laminas\View\Model\JsonModel;
+
+$plugin_path = dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '/';
+require_once $plugin_path . 'wp-load.php';
+
+/*
+ * $wpdb & abspath are only not null when being referenced from Docport.php or root, not sure which
+ * Read about paths & directory structure on Wordpress site to determine best practices
+ */
+
+global $wpdb;
+
+$dbTableManager = new DbTableManager( $wpdb );
+
 // Check if the form was submitted using the POST method
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	die('Hit post!');
-	// Get the data from the form
-	$input_value = $_POST["your_input_name"]; // Replace with the actual name of your input field
+if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
+	// Get the data from the form (awww, what you name the cat?)
+	$catName = $_POST["dp-cat-name"]; // Replace with the actual name of your input field
 
-	// Call your PHP function
-	my_function($input_value);
+	try {
+		$dbTableManager->insertCategory( $catName );
 
-	// You can then perform other actions, like:
-	// - Saving data to a database
-	// - Sending an email
-	// - Redirecting the user to another page
-	// - Displaying a success message
+		$response = array(
+			'data' => array(
+				'success'  => 'error',
+				'message'  => 'Category added successfully!',
+				'response' => $catName
+			)
+		);
+	} catch ( \Exception $e ) {
+		//todo exceptions not caught or returned, fix later
+		$response = array(
+			'data' => array(
+				'status'  => 'error',
+				'message' => $e->getMessage()
+			)
+		);
+	}
+
+	return json_encode( $response );
+} elseif ( $_SERVER["REQUEST_METHOD"] == "GET" ) {
+	try {
+		$response = array(
+			'data' => array(
+				'success'  => 'success',
+				'message'  => 'Category added successfully!',
+				'data' => $dbTableManager->getCategory()
+			)
+		);
+	} catch ( \Exception $e ) {
+		//todo exceptions not caught or returned, fix later
+		$response = array(
+			'data' => array(
+				'status'  => 'error',
+				'message' => $e->getMessage()
+			)
+		);
+	}
+
+	return json_encode( $response );
 } else {
 	// Handle cases where the PHP file is accessed directly without form submission
 	echo "This page should be accessed through a form submission.";
-}
 
-// Your PHP function
-function my_function($data) {
-	// Do something with the submitted data
-	echo "Processing data: " . $data;
-	// ... your function logic ...
 }
 
 ?>

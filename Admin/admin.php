@@ -1,22 +1,35 @@
 <?php
-    require_once(__DIR__ . '/category.php');
+
 ?>
 <h2>Docport Administration</h2>
-<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/additional-methods.min.js"></script>
-<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 <div class="row">
-    <h3>Document Category Management</h3>
-    <form id="dp-cat-form" action="category.php" method="post">
-        <label for="dp-cat-name">Category Name</label>
-        <input id="dp-cat-name" type="text">
-        <input type="submit" value="Category Submit" name="dp-cat-submit" id="dp-cat-submit">
-    </form>
-</div>
-<div class="row">
-    <h3>Document Upload Management</h3>
-    <form id="dp-doc-form" action="document.php">
-        <label for="dp-doc-upload">Document Upload</label>
-        <input type="file" name="dp-doc-upload" id="dp-doc-upload">
-        <input type="submit" value="Document Submit" name="dp-doc-submit" id="dp-doc-submit">
-    </form>
+    <div class="col-md-6">
+        <h5>Document Category Management</h5>
+	    <?php //todo get rid of hard coded address, did when tired, dynamic call tries to include mamp in the address (composer autoloader?) ?>
+        <form id="dp-cat-form" action="http://localhost/devplugin/wp-content/plugins/Docport/Admin/category.php" method="post">
+            <label class="hidden" for="dp-cat-name">Category Name</label>
+            <input type="text" id="dp-cat-name" name="dp-cat-name">
+            <button type="submit" id="dp-cat-submit">Submit</button>
+        </form>
+        <div style="height: 100px; overflow:auto">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <?php //todo get rid of hard coded address ?>
+                <tbody id="dp-cat-table" data-loader="http://localhost/devplugin/wp-content/plugins/Docport/Admin/category.php"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h5>Document Upload Management</h5>
+	    <?php //todo get rid of hard coded address, did when tired, dynamic call tries to include mamp in the address (composer auto loader?) ?>
+        <form id="dp-doc-form" action="http://localhost/devplugin/wp-content/plugins/Docport/Admin/document.php">
+            <label class="hidden" for="dp-doc-upload">Document Upload</label>
+            <input type="file" name="dp-doc-upload" id="dp-doc-upload">
+        </form>
+    </div>
 </div>

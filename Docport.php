@@ -25,8 +25,11 @@ add_action('admin_footer', 'export_button');
 function dp_activate() {
 	try{
 		//make sure tables exist, dbDelta makes sure there are no duplicates
-		$dpTableManager = new DbTableManager();
+        global $wpdb;
+
+		$dpTableManager = new DbTableManager($wpdb);
 		$dpTableManager->initTables();
+        $dpTableManager->insertCategory('test');
 	} catch (\Exception $e) {
 		//todo implement cleaner and more proper error reporting
 		var_dump($e->getMessage());
@@ -48,6 +51,8 @@ function docport_menu() {
 }
 
 function docport_page_content() {
+    global $wpdb;
+    $dbTableManager = new DbTableManager($wpdb);
     ?>
     <div class="wrap">
 		<?php include( plugin_dir_path( __FILE__ ) . 'Admin/admin.php' ); ?>
@@ -58,7 +63,9 @@ function docport_page_content() {
 //exports table data, called by export button
 function dp_export_data() {
 	try{
-		$dpTableManager = new DbTableManager();
+		global $wpdb;
+
+		$dpTableManager = new DbTableManager($wpdb);
 		$dpTableManager->exportTables();
 		exit;
 	} catch (\Exception $e) {
@@ -78,6 +85,9 @@ function my_plugin_enqueue_admin_scripts($hook): void {
 		false // Load in the footer (true) or header (false)
 	);
 
+    wp_enqueue_script('jquery.validate', '//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"');
+    wp_enqueue_script('jquery.validate', '//ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/additional-methods.min.js"');
+	wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css');
 	wp_enqueue_script('toastr', plugin_dir_url( __FILE__ ) . 'Assets/toastr/toastr.js', array('jquery'));
     wp_enqueue_style('toastr', plugin_dir_url( __FILE__ ) . 'Assets/toastr/build/toastr.css');
 
@@ -117,21 +127,5 @@ function export_button(): void {
         });
 	</script>
 	<?php
-}
-
-//scratch
-function dp_admin_notice() {
-	//warning notice example
-	/*$class = 'notice notice-warning';
-	$message = __( 'Before uninstalling the DocPort plugin, it is highly recommended to export your data.', 'docport' );
-	$export_url = admin_url('admin-post.php?action=dp_export_action');
-	$button_text = __( 'Export DocPort Data', 'docport' );
-
-	printf( '<div class="%1$s"><p>%2$s <a href="%3$s" class="button button-primary">%4$s</a></p></div>',
-		esc_attr( $class ),
-		esc_html( $message ),
-		esc_url( $export_url ),
-		esc_html( $button_text )
-	);*/
 }
 ?>
