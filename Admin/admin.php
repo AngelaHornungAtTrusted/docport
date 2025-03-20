@@ -13,11 +13,11 @@
             <button type="submit" id="dp-cat-submit">Submit</button>
         </form>
         <div style="height: 200px; overflow:auto; border: 1px; border-color: black; margin-top: 15px;">
-            <table>
+            <table class="table">
                 <thead>
                 <tr>
-                    <th>Category</th>
-                    <th>Status</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Active</th>
                 </tr>
                 </thead>
                 <?php //todo get rid of hard coded address ?>

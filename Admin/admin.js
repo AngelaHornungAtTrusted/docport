@@ -17,12 +17,13 @@
     }
 
     const grabCategories = function () {
+        //clear table
+        $cTable[0].innerHTML="";
         let promise = $.ajax({
             url: $cTable.data('loader'),
             type: 'GET',
             data: {},
         }).done(function (response) {
-            console.log(response.data);
             if (response.data.success === 'success') {
                 toastr.success(response.data.message);
                 categoryTableInit(response.data.content);
@@ -38,15 +39,17 @@
             checked = cat.active === '1' ? 'checked' : '';
             $cTable.append('' +
                 '<tr>' +
-                '<td>' + cat.title + '</td>' +
+                '<td><input class="dp-cat-title" id="cat-title-' + cat.id + '" type="text" value="' + cat.title + '"></td>' +
                 '<td><input class="dp-cat-checkbox" type="checkbox" id="cat-check-' + cat.id + '" value="' + cat.id + '" ' + checked + '></td>' +
                 '</tr>');
         });
 
+        inputWatch();
         checkWatch();
     }
 
     const checkWatch = function () {
+        console.log('Check Watch');
         $('.dp-cat-checkbox').on('click', function(e){
             catId = e.currentTarget.value;
             catStatus = e.currentTarget.checked;
@@ -57,10 +60,34 @@
                 data: {
                     'dp-cat-id':catId,
                     'dp-cat-status':catStatus,
-                    'dp-post-type':1            //0 is for new category, 1 is to update
+                    'dp-post-type':1            //0 is for new category, 1 is to update, 2 is for title
                 },
             }).done(function (response) {
-                console.log(response.data);
+                if (response.data.success === 'success') {
+                    toastr.success(response.data.message);
+                } else {
+                    toastr.error(response.data.message);
+                }
+            }).always(function (response, s, r) {
+            });
+        });
+    }
+
+    const inputWatch = function () {
+        $('.dp-cat-title').on('change', function(e){
+            catId = e.currentTarget.id;
+            catTitle = e.currentTarget.value;
+
+            let promise = $.ajax({
+                url: $cTable.data('loader'),
+                type: 'POST',
+                data: {
+                    'dp-cat-id':catId.split('-')[2],
+                    'dp-cat-title':catTitle,
+                    'dp-post-type':2            //0 is for new category, 1 is to update, 2 is for title
+                },
+            }).done(function (response) {
+                console.log(response);
                 if (response.data.success === 'success') {
                     toastr.success(response.data.message);
                 } else {
@@ -84,11 +111,12 @@
                     url: $cForm.prop('action'),
                     type: 'post',
                     data: $cForm.serializeObject(),
-                }).done(function (response, s, r) {
-                    if (s === 'success') {
-                        toastr.success('Success');
+                }).done(function (response) {
+                    if (response.data.success === 'success') {
+                        toastr.success(response.data.message);
+                        grabCategories();
                     } else {
-                        toastr.error('Error');
+                        toastr.error(response.data.message);
                     }
                 }).fail(function () {
                     toastr.error('Unknown Error');

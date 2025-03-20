@@ -1,7 +1,5 @@
 <?php
 
-use Laminas\View\Model\JsonModel;
-
 $plugin_path = dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '/';
 require_once $plugin_path . 'wp-load.php';
 
@@ -18,9 +16,43 @@ $dbTableManager = new DbTableManager( $wpdb );
 if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
 	//two post types, new category and update category
 	if ($_POST["dp-post-type"] == "1") {
-		//todo we left off on setting up activity updating for categories, after we'll add title changes
-		var_dump($_POST);
-		die();
+		try{
+			$dbTableManager->updateCategoryStatus($_POST["dp-cat-id"], $_POST["dp-cat-status"]);
+
+			$response = array(
+				'data' => array(
+					'success'  => 'success',
+					'message'  => 'Category Updated!',
+				)
+			);
+		}catch(\Exception $e){
+			//todo exceptions not caught or returned, fix later
+			$response = array(
+				'data' => array(
+					'success'  => 'error',
+					'message'  => $e->getMessage(),
+				)
+			);
+		}
+	} elseif ($_POST["dp-post-type"] == "2") {
+		try{
+			$dbTableManager->updateCategoryTitle($_POST["dp-cat-id"], $_POST["dp-cat-title"]);
+
+			$response = array(
+				'data' => array(
+					'success'  => 'success',
+					'message'  => 'Category Updated!',
+				)
+			);
+		}catch(\Exception $e){
+			//todo exceptions not caught or returned, fix later
+			$response = array(
+				'data' => array(
+					'success'  => 'error',
+					'message'  => $e->getMessage(),
+				)
+			);
+		}
 	} else {
 		// Get the data from the form (awww, what you name the cat?)
 		$catName = $_POST["dp-cat-name"]; // Replace with the actual name of your input field
@@ -31,7 +63,7 @@ if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
 			$response = array(
 				'data' => array(
 					'success'  => 'success',
-					'message'  => 'Category Added Successfully!',
+					'message'  => 'Category Added!',
 					'content' => $catName
 				)
 			);

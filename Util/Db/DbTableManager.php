@@ -109,15 +109,31 @@ class DbTableManager
 			return $this->dpdb->get_results("SELECT * FROM dp_document_categories");
 		} else {
 			//grab specific
+			return $this->dpdb->get_row("SELECT * FROM dp_document_categories WHERE id = '$category'");
 		}
 	}
 
-	function updateCategory(){
-
+	//no deleting categories, just changing active status
+	function updateCategoryStatus($categoryId, $checked) {
+		$this->dpdb->update(
+			'dp_document_categories',
+			array(
+				'active' => ($checked === "true" ? 1:0),
+				'update_date' => gmdate('Y-m-d H:i:s')
+			),
+			array('id' => $categoryId)
+		);
 	}
 
-	function deleteCategory(){
-
+	function updateCategoryTitle($categoryId, $title) {
+		$this->dpdb->update(
+			'dp_document_categories',
+			array(
+				'title' => $title,
+				'update_date' => gmdate('Y-m-d H:i:s')
+			),
+			array('id' => $categoryId)
+		);
 	}
 
 	/* Document Management */
