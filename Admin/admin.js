@@ -1,16 +1,21 @@
 (function($) {
 
-    let $cForm, $dForm, $cTable;
+    let $cForm, $dForm, $cTable, $dTable;
     let checked, catId, catStatus;
 
     const pageInit = function() {
-        //set page vars
+        //forms
         $cForm = $('#dp-cat-form');
         $dForm = $('#dp-doc-form');
+
+        //elements
         $cTable = $('#dp-cat-table');
 
         //grab categories
         grabCategories();
+        //grab documents
+        grabDocuments();
+
         //call form handlers
         handleCategoryForm();
         handleDocumentForm();
@@ -49,7 +54,6 @@
     }
 
     const checkWatch = function () {
-        console.log('Check Watch');
         $('.dp-cat-checkbox').on('click', function(e){
             catId = e.currentTarget.value;
             catStatus = e.currentTarget.checked;
@@ -127,8 +131,33 @@
         });
     }
 
+    const grabDocuments = function () {
+
+    }
+
     const handleDocumentForm = function() {
-        //todo implement document handling
+        $dForm.on('submit', function(e){
+            const files = document.querySelector('[type=file]').files
+            const formData = new FormData()
+
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i]
+                console.log(file);
+
+                formData.append('files[]', file)
+            }
+            e.preventDefault();
+            fetch($dForm.prop('action'), {
+                method: 'post',
+                body: formData,
+            }).then((response) => {
+                if (response.data.success === 'success') {
+                    toastr.success(response.data.message);
+                } else {
+                    toastr.error(response.data.message);
+                }
+            });
+        });
     }
 
     $(document).ready(function() {

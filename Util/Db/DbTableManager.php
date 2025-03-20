@@ -17,8 +17,8 @@ class DbTableManager
 		//document table
         $dpTable = "CREATE TABLE dp_documents (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        title varchar(55) DEFAULT '' NOT NULL,
-        path varchar(55) DEFAULT '' NOT NULL,
+        title varchar(255) DEFAULT '' NOT NULL,
+        path varchar(255) DEFAULT '' NOT NULL,
         cat_id mediumint(9) NOT NULL,
         active tinyint(1) DEFAULT '0',
         create_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -28,7 +28,7 @@ class DbTableManager
 
 	    $catTable = "CREATE TABLE dp_document_categories (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        title varchar(55) DEFAULT '' NOT NULL,
+        title varchar(255) DEFAULT '' NOT NULL,
         active tinyint(1) DEFAULT '0',
         create_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         update_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -137,8 +137,18 @@ class DbTableManager
 	}
 
 	/* Document Management */
-	function insertDocument(){
-
+	function insertDocument($dTitle, $dPath): void {
+		$this->dpdb->insert(
+			'dp_documents',
+			array(
+				'title' => $dTitle,
+				'path' => $dPath,
+				'cat_id' => 0,
+				'active' => 1,
+				'create_date' => gmdate('Y-m-d H:i:s'),
+				'update_date'  => gmdate('Y-m-d H:i:s')
+			)
+		);
 	}
 
 	function updateDocument(){

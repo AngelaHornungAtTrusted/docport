@@ -28,9 +28,10 @@
     <div class="col-md-6">
         <h5>Document Upload Management</h5>
 	    <?php //todo get rid of hard coded address, did when tired, dynamic call tries to include mamp in the address (composer auto loader?) ?>
-        <form id="dp-doc-form" action="http://localhost/devplugin/wp-content/plugins/Docport/Admin/document.php">
+        <form id="dp-doc-form" action="http://localhost/devplugin/wp-content/plugins/Docport/Admin/document.php" method="post" enctype="multipart/form-data">
             <label class="hidden" for="dp-doc-upload">Document Upload</label>
             <input type="file" name="dp-doc-upload" id="dp-doc-upload">
+            <button type="submit" id="dp-doc-submit">Submit</button>
         </form>
     </div>
 </div>
