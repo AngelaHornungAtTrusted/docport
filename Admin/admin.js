@@ -1,6 +1,7 @@
 (function($) {
 
     let $cForm, $dForm, $cTable;
+    let checked, catId, catStatus;
 
     const pageInit = function() {
         //set page vars
@@ -20,15 +21,53 @@
             url: $cTable.data('loader'),
             type: 'GET',
             data: {},
-        }).done(function (response, s, r) {
-            console.log(response);
-            console.log(s);
-            if (s === 'success') {
-                toastr.success('Success');
+        }).done(function (response) {
+            console.log(response.data);
+            if (response.data.success === 'success') {
+                toastr.success(response.data.message);
+                categoryTableInit(response.data.content);
             } else {
-                toastr.error('Error');
+                toastr.error(response.data.message);
             }
         }).always(function (response, s, r) {
+        });
+    }
+
+    const categoryTableInit = function (categories) {
+        $.each(categories, function (key, cat) {
+            checked = cat.active === '1' ? 'checked' : '';
+            $cTable.append('' +
+                '<tr>' +
+                '<td>' + cat.title + '</td>' +
+                '<td><input class="dp-cat-checkbox" type="checkbox" id="cat-check-' + cat.id + '" value="' + cat.id + '" ' + checked + '></td>' +
+                '</tr>');
+        });
+
+        checkWatch();
+    }
+
+    const checkWatch = function () {
+        $('.dp-cat-checkbox').on('click', function(e){
+            catId = e.currentTarget.value;
+            catStatus = e.currentTarget.checked;
+
+            let promise = $.ajax({
+                url: $cTable.data('loader'),
+                type: 'POST',
+                data: {
+                    'dp-cat-id':catId,
+                    'dp-cat-status':catStatus,
+                    'dp-post-type':1            //0 is for new category, 1 is to update
+                },
+            }).done(function (response) {
+                console.log(response.data);
+                if (response.data.success === 'success') {
+                    toastr.success(response.data.message);
+                } else {
+                    toastr.error(response.data.message);
+                }
+            }).always(function (response, s, r) {
+            });
         });
     }
 

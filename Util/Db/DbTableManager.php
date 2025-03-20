@@ -106,7 +106,7 @@ class DbTableManager
 	function getCategory($category = false) {
 		if ($category == false) {
 			//grab all
-			return $this->dpdb->get_row("SELECT * FROM dp_document_categories WHERE active = 1");
+			return $this->dpdb->get_results("SELECT * FROM dp_document_categories");
 		} else {
 			//grab specific
 		}

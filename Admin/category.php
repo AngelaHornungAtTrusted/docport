@@ -16,37 +16,46 @@ $dbTableManager = new DbTableManager( $wpdb );
 
 // Check if the form was submitted using the POST method
 if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
-	// Get the data from the form (awww, what you name the cat?)
-	$catName = $_POST["dp-cat-name"]; // Replace with the actual name of your input field
+	//two post types, new category and update category
+	if ($_POST["dp-post-type"] == "1") {
+		//todo we left off on setting up activity updating for categories, after we'll add title changes
+		var_dump($_POST);
+		die();
+	} else {
+		// Get the data from the form (awww, what you name the cat?)
+		$catName = $_POST["dp-cat-name"]; // Replace with the actual name of your input field
 
-	try {
-		$dbTableManager->insertCategory( $catName );
+		try {
+			$dbTableManager->insertCategory($catName);
 
-		$response = array(
-			'data' => array(
-				'success'  => 'error',
-				'message'  => 'Category added successfully!',
-				'response' => $catName
-			)
-		);
-	} catch ( \Exception $e ) {
-		//todo exceptions not caught or returned, fix later
-		$response = array(
-			'data' => array(
-				'status'  => 'error',
-				'message' => $e->getMessage()
-			)
-		);
+			$response = array(
+				'data' => array(
+					'success'  => 'success',
+					'message'  => 'Category Added Successfully!',
+					'content' => $catName
+				)
+			);
+		} catch ( \Exception $e ) {
+			//todo exceptions not caught or returned, fix later
+			$response = array(
+				'data' => array(
+					'success'  => 'error',
+					'message'  => $e->getMessage(),
+				)
+			);
+		}
 	}
 
-	return json_encode( $response );
+	header('Content-Type: application/json');
+	echo json_encode($response);
+	exit();
 } elseif ( $_SERVER["REQUEST_METHOD"] == "GET" ) {
 	try {
 		$response = array(
 			'data' => array(
 				'success'  => 'success',
-				'message'  => 'Category added successfully!',
-				'data' => $dbTableManager->getCategory()
+				'message'  => 'Categories Acquired!',
+				'content' => $dbTableManager->getCategory() // Renamed the inner 'data' key
 			)
 		);
 	} catch ( \Exception $e ) {
@@ -59,7 +68,10 @@ if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
 		);
 	}
 
-	return json_encode( $response );
+	// To send the JSON response:
+	header('Content-Type: application/json');
+	echo json_encode($response);
+	exit();
 } else {
 	// Handle cases where the PHP file is accessed directly without form submission
 	echo "This page should be accessed through a form submission.";

@@ -9,15 +9,16 @@
         <form id="dp-cat-form" action="http://localhost/devplugin/wp-content/plugins/Docport/Admin/category.php" method="post">
             <label class="hidden" for="dp-cat-name">Category Name</label>
             <input type="text" id="dp-cat-name" name="dp-cat-name">
+            <input type="number" class="hidden" id="dp-post-type" name="dp-post-type" value="0"></input>
             <button type="submit" id="dp-cat-submit">Submit</button>
         </form>
-        <div style="height: 100px; overflow:auto">
+        <div style="height: 200px; overflow:auto; border: 1px; border-color: black; margin-top: 15px;">
             <table>
                 <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Status</th>
-                    </tr>
+                <tr>
+                    <th>Category</th>
+                    <th>Status</th>
+                </tr>
                 </thead>
                 <?php //todo get rid of hard coded address ?>
                 <tbody id="dp-cat-table" data-loader="http://localhost/devplugin/wp-content/plugins/Docport/Admin/category.php"></tbody>
