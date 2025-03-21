@@ -1,7 +1,7 @@
 (function($) {
 
     let $cForm, $dForm, $cTable, $dTable;
-    let checked, catId, catStatus;
+    let checked, catId, catStatus, catTitle, docId, docStatus, docTitle, categories, catOptions;
 
     const pageInit = function() {
         //forms
@@ -10,11 +10,10 @@
 
         //elements
         $cTable = $('#dp-cat-table');
+        $dTable = $('#dp-doc-table');
 
-        //grab categories
+        //grab categories (grab docs after we have categories as those depend on the categories)
         grabCategories();
-        //grab documents
-        grabDocuments();
 
         //call form handlers
         handleCategoryForm();
@@ -31,7 +30,9 @@
         }).done(function (response) {
             if (response.data.success === 'success') {
                 toastr.success(response.data.message);
-                categoryTableInit(response.data.content);
+                categories = response.data.content;
+                categoryTableInit(categories);
+                grabDocuments();
             } else {
                 toastr.error(response.data.message);
             }
@@ -49,11 +50,11 @@
                 '</tr>');
         });
 
-        inputWatch();
-        checkWatch();
+        catCheckWatch();
+        catInputWatch();
     }
 
-    const checkWatch = function () {
+    const catCheckWatch = function () {
         $('.dp-cat-checkbox').on('click', function(e){
             catId = e.currentTarget.value;
             catStatus = e.currentTarget.checked;
@@ -64,7 +65,7 @@
                 data: {
                     'dp-cat-id':catId,
                     'dp-cat-status':catStatus,
-                    'dp-post-type':1            //0 is for new category, 1 is to update, 2 is for title
+                    'dp-post-type':1            //0 is for new category, 1 is to update activity, 2 is for title
                 },
             }).done(function (response) {
                 if (response.data.success === 'success') {
@@ -77,7 +78,7 @@
         });
     }
 
-    const inputWatch = function () {
+    const catInputWatch = function () {
         $('.dp-cat-title').on('change', function(e){
             catId = e.currentTarget.id;
             catTitle = e.currentTarget.value;
@@ -132,7 +133,99 @@
     }
 
     const grabDocuments = function () {
+        //clear table
+        $dTable[0].innerHTML="";
+        let promise = $.ajax({
+            url: $dTable.data('loader'),
+            type: 'GET',
+            data: {},
+        }).done(function (response) {
+            if (response.data.success === 'success') {
+                toastr.success(response.data.message);
+                documentTableInit(response.data.content);
+            } else {
+                toastr.error(response.data.message);
+            }
+        }).always(function (response, s, r) {
+        });
+    }
 
+    const documentTableInit = function (documents) {
+        //set up select options html (standard across all)
+        catOptions = '';
+        $.each(categories, function (key, cat){
+            console.log(cat.title);
+            catOptions += '<option value="' + cat.id + '">' + cat.title + '</option>'
+        });
+
+        $.each(documents, function (key, doc) {
+            checked = doc.active === '1' ? 'checked' : '';
+            $dTable.append('' +
+                '<tr>' +
+                '<td><input class="dp-doc-title" id="doc-title-' + doc.id + '" type="text" value="' + doc.title + '"></td>' +
+                '<td><select id="dp-doc-select" class="dp-doc-select" data-id="doc-select-' + doc.id + '">' + catOptions + '</select> </td>' +
+                '<td><input class="dp-doc-checkbox" type="checkbox" id="doc-check-' + doc.id + '" value="' + doc.id + '" ' + checked + '></td>' +
+                '</tr>');
+        });
+
+        docCheckWatch();
+        docTitleWatch();
+        docSelectWatch();
+    }
+
+    const docCheckWatch = function () {
+        $('.dp-doc-checkbox').on('click', function(e){
+            docId = e.currentTarget.value;
+            docStatus = e.currentTarget.checked;
+
+            let promise = $.ajax({
+                url: $dTable.data('loader'),
+                type: 'POST',
+                data: {
+                    'dp-doc-id':docId,
+                    'dp-doc-status':docStatus,
+                    'dp-post-type':1            //0 is for new document, 1 is to update activity, 2 is for title
+                },
+            }).done(function (response) {
+                if (response.data.success === 'success') {
+                    toastr.success(response.data.message);
+                } else {
+                    toastr.error(response.data.message);
+                }
+            }).always(function (response, s, r) {
+            });
+        });
+    }
+
+    const docTitleWatch = function () {
+        $('.dp-doc-title').on('change', function(e){
+            docId = e.currentTarget.id;
+            docTitle = e.currentTarget.value;
+
+            let promise = $.ajax({
+                url: $dTable.data('loader'),
+                type: 'POST',
+                data: {
+                    'dp-doc-id':docId.split('-')[2],
+                    'dp-doc-title':docTitle,
+                    'dp-post-type':2            //0 is for new category, 1 is to update, 2 is for title
+                },
+            }).done(function (response) {
+                console.log(response);
+                if (response.data.success === 'success') {
+                    toastr.success(response.data.message);
+                } else {
+                    toastr.error(response.data.message);
+                }
+            }).always(function (response, s, r) {
+            });
+        });
+    }
+
+    const docSelectWatch = function () {
+        $('.dp-doc-select').on('change', function(e){
+            console.log(e.currentTarget);
+        });
     }
 
     const handleDocumentForm = function() {
@@ -142,14 +235,16 @@
 
             for (let i = 0; i < files.length; i++) {
                 let file = files[i]
-                console.log(file);
-
                 formData.append('files[]', file)
             }
             e.preventDefault();
             fetch($dForm.prop('action'), {
                 method: 'post',
                 body: formData,
+                //todo requires testing
+                data: {
+                    'dp-post-type':0            //0 is for new document, 1 is to update activity, 2 is for title
+                },
             }).then((response) => {
                 if (response.data.success === 'success') {
                     toastr.success(response.data.message);

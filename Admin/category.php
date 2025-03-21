@@ -14,7 +14,7 @@ $dbTableManager = new DbTableManager( $wpdb );
 
 // Check if the form was submitted using the POST method
 if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
-	//two post types, new category and update category
+	//three post types, new category, change category status and update category title
 	if ($_POST["dp-post-type"] == "1") {
 		try{
 			$dbTableManager->updateCategoryStatus($_POST["dp-cat-id"], $_POST["dp-cat-status"]);
@@ -82,6 +82,7 @@ if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
 	echo json_encode($response);
 	exit();
 } elseif ( $_SERVER["REQUEST_METHOD"] == "GET" ) {
+	//todo implement multiple get method types
 	try {
 		$response = array(
 			'data' => array(

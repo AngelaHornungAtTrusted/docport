@@ -33,5 +33,18 @@
             <input type="file" name="dp-doc-upload" id="dp-doc-upload">
             <button type="submit" id="dp-doc-submit">Submit</button>
         </form>
+        <div style="height: 200px; overflow:auto; border: 1px; border-color: black; margin-top: 15px;">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Document</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Active</th>
+                </tr>
+                </thead>
+			    <?php //todo get rid of hard coded address ?>
+                <tbody id="dp-doc-table" data-loader="http://localhost/devplugin/wp-content/plugins/Docport/Admin/document.php"></tbody>
+            </table>
+        </div>
     </div>
 </div>

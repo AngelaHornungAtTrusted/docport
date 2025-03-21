@@ -151,12 +151,44 @@ class DbTableManager
 		);
 	}
 
-	function updateDocument(){
-		
+	function getDocument($dId = false, $cId = false) {
+		if ($dId == false) {
+			if ($cId == false) {
+				//get all
+				return $this->dpdb->get_results("SELECT * FROM dp_documents");
+			}
+			//get by category id
+			return $this->dpdb->get_row("SELECT * FROM dp_documents WHERE cat_id = '$cId'");
+		} else {
+			//get by id
+			return $this->dpdb->get_row("SELECT * FROM dp_document_categories WHERE id = '$dId'");
+		}
 	}
 
-	function deleteDocument(){
+	function updateDocumentStatus($dId, $checked) {
+		$this->dpdb->update(
+			'dp_documents',
+			array(
+				'active' => ($checked === "true" ? 1:0),
+				'update_date' => gmdate('Y-m-d H:i:s')
+			),
+			array('id' => $dId)
+		);
+	}
 
+	function updateDocumentTitle($dId, $title) {
+		$this->dpdb->update(
+			'dp_documents',
+			array(
+				'title' => $title,
+				'update_date' => gmdate('Y-m-d H:i:s')
+			),
+			array('id' => $dId)
+		);
+	}
+
+	function updateDocument(){
+		
 	}
 }
 
