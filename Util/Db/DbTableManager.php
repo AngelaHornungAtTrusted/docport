@@ -187,6 +187,17 @@ class DbTableManager
 		);
 	}
 
+	function updateDocumentCategory($dId, $cId) {
+		$this->dpdb->update(
+			'dp_documents',
+			array(
+				'cat_id' => intval($cId),
+				'update_date' => gmdate('Y-m-d H:i:s')
+			),
+			array('id' => $dId)
+		);
+	}
+
 	function updateDocument(){
 		
 	}

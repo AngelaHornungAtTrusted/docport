@@ -152,10 +152,10 @@
 
     const documentTableInit = function (documents) {
         //set up select options html (standard across all)
-        catOptions = '';
+        catOptions = '<option class="placeholder" value="0">Uncategorized</option>';
         $.each(categories, function (key, cat){
             console.log(cat.title);
-            catOptions += '<option value="' + cat.id + '">' + cat.title + '</option>'
+            catOptions += '<option class="dp-doc-option" value="' + cat.id + '">' + cat.title + '</option>'
         });
 
         $.each(documents, function (key, doc) {
@@ -163,9 +163,12 @@
             $dTable.append('' +
                 '<tr>' +
                 '<td><input class="dp-doc-title" id="doc-title-' + doc.id + '" type="text" value="' + doc.title + '"></td>' +
-                '<td><select id="dp-doc-select" class="dp-doc-select" data-id="doc-select-' + doc.id + '">' + catOptions + '</select> </td>' +
+                '<td><select id="doc-select-' + doc.id + '" class="dp-doc-select">' + catOptions + '</select> </td>' +
                 '<td><input class="dp-doc-checkbox" type="checkbox" id="doc-check-' + doc.id + '" value="' + doc.id + '" ' + checked + '></td>' +
                 '</tr>');
+
+            //select current document category
+            $('#doc-select-' + doc.id).val(parseInt(doc.cat_id));
         });
 
         docCheckWatch();
@@ -222,9 +225,28 @@
         });
     }
 
+    //todo implement category changing for documents
     const docSelectWatch = function () {
         $('.dp-doc-select').on('change', function(e){
-            console.log(e.currentTarget);
+            docId = e.currentTarget.id;
+            catId = e.target.value;
+
+            let promise = $.ajax({
+                url: $dTable.data('loader'),
+                type: 'POST',
+                data: {
+                    'dp-doc-id':docId.split('-')[2],
+                    'dp-doc-cat':catId,
+                    'dp-post-type':3            //0 is for new category, 1 is to update, 2 is for title, 3 is for new category
+                },
+            }).done(function (response) {
+                if (response.data.success === 'success') {
+                    toastr.success(response.data.message);
+                } else {
+                    toastr.error(response.data.message);
+                }
+            }).always(function (response, s, r) {
+            });
         });
     }
 

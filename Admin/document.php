@@ -53,6 +53,26 @@ if ( $_SERVER["REQUEST_METHOD"] == "POST" ) {
 				)
 			);
 		}
+	} elseif ($_POST["dp-post-type"] == "3") {
+		try{
+			//update document title
+			$dbTableManager->updateDocumentCategory($_POST["dp-doc-id"], $_POST["dp-doc-cat"]);
+
+			$response = array(
+				'data' => array(
+					'success'  => 'success',
+					'message'  => 'Document Updated!',
+				)
+			);
+		}catch(\Exception $e){
+			//todo exceptions not caught or returned, fix later
+			$response = array(
+				'data' => array(
+					'success'  => 'error',
+					'message'  => $e->getMessage(),
+				)
+			);
+		}
 	} else {
 		//upload new document
 		try {
