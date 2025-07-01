@@ -1,6 +1,9 @@
 <?php
 
 /* variables & objects */
+
+use Util\DbTableManager;
+
 require_once(__DIR__ . '/Util/Db/DbTableManager.php');
 
 if (!defined('WP_UNINSTALL_PLUGIN')) {

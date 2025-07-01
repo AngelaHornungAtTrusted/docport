@@ -1,4 +1,4 @@
-(function($) {
+/*(function($) {
 
     let $cForm, $dForm, $cTable, $dTable;
     let checked, catId, catStatus, catTitle, docId, docStatus, docTitle, categories, catOptions;
@@ -309,4 +309,4 @@
 
         return objectData;
     };
-})(jQuery);
+})(jQuery);*/

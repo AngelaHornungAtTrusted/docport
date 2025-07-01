@@ -2,49 +2,52 @@
 
 ?>
 <h2>Docport Administration</h2>
-<div class="row">
-    <div class="col-md-6">
-        <h5>Document Category Management</h5>
-	    <?php //todo get rid of hard coded address, did when tired, dynamic call tries to include mamp in the address (composer autoloader?) ?>
-        <form id="dp-cat-form" action="http://localhost/devplugin/wp-content/plugins/Docport/Admin/category.php" method="post">
-            <label class="hidden" for="dp-cat-name">Category Name</label>
-            <input type="text" id="dp-cat-name" name="dp-cat-name">
-            <input type="number" class="hidden" id="dp-post-type" name="dp-post-type" value="0"></input>
-            <button type="submit" id="dp-cat-submit">Submit</button>
-        </form>
-        <div style="height: 200px; overflow:auto; border: 1px; border-color: black; margin-top: 15px;">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Category</th>
-                    <th scope="col">Active</th>
-                </tr>
-                </thead>
-                <?php //todo get rid of hard coded address ?>
-                <tbody id="dp-cat-table" data-loader="http://localhost/devplugin/wp-content/plugins/Docport/Admin/category.php"></tbody>
-            </table>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="home" aria-selected="true">Statistics</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="campaigns-tab" data-bs-toggle="tab" data-bs-target="#campaigns" type="button" role="tab" aria-controls="profile" aria-selected="false">Campaigns</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab" aria-controls="categories" aria-selected="false">Categories</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#platforms" type="button" role="tab" aria-controls="platforms" aria-selected="false">Platforms</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab" aria-controls="documents" aria-selected="false">Documents</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+        <div class="wrap">
+            <?php include( plugin_dir_path( __FILE__ ) . 'partial/stats/stats.php' ); ?>
+            <?php wp_enqueue_script('stats-js', DP_ADMIN_URL . '/partial/stats/stats.js"', array('jquery')); ?>
         </div>
     </div>
-    <div class="col-md-6">
-        <h5>Document Upload Management</h5>
-	    <?php //todo get rid of hard coded address, did when tired, dynamic call tries to include mamp in the address (composer auto loader?) ?>
-        <form id="dp-doc-form" action="http://localhost/devplugin/wp-content/plugins/Docport/Admin/document.php" method="post" enctype="multipart/form-data">
-            <label class="hidden" for="dp-doc-upload">Document Upload</label>
-            <input type="file" name="dp-doc-upload" id="dp-doc-upload">
-            <button type="submit" id="dp-doc-submit">Submit</button>
-        </form>
-        <div style="height: 200px; overflow:auto; border: 1px; border-color: black; margin-top: 15px;">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Document</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Active</th>
-                </tr>
-                </thead>
-			    <?php //todo get rid of hard coded address ?>
-                <tbody id="dp-doc-table" data-loader="http://localhost/devplugin/wp-content/plugins/Docport/Admin/document.php"></tbody>
-            </table>
+    <div class="tab-pane fade" id="campaigns" role="tabpanel" aria-labelledby="campaigns-tab">
+        <div class="wrap">
+            <?php include( plugin_dir_path( __FILE__ ) . 'partial/campaigns/campaigns.php' ); ?>
+            <?php wp_enqueue_script('campaigns-js', DP_ADMIN_URL . '/partial/campaigns/campaigns.js"', array('jquery')); ?>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+        <div class="wrap">
+            <?php include( plugin_dir_path( __FILE__ ) . 'partial/categories/categories.php' ); ?>
+            <?php wp_enqueue_script('categories-js', DP_ADMIN_URL . '/partial/categories/categories.js"', array('jquery')); ?>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="platforms" role="tabpanel" aria-labelledby="platforms-tab">
+        <div class="wrap">
+            <?php include( plugin_dir_path( __FILE__ ) . 'partial/platforms/platforms.php' ); ?>
+            <?php wp_enqueue_script('platforms-js', DP_ADMIN_URL . '/partial/platforms/platforms.js"', array('jquery')); ?>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+        <div class="wrap">
+            <?php include( plugin_dir_path( __FILE__ ) . 'partial/documents/documents.php' ); ?>
+            <?php wp_enqueue_script('documents-js', DP_ADMIN_URL . '/partial/documents/documents.js"', array('jquery')); ?>
         </div>
     </div>
 </div>

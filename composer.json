@@ -1,0 +1,16 @@
+{
+    "name": "trustedtechnologies/docport",
+    "description": "Document portfolio plugin for Wordpress",
+    "autoload": {
+        "psr-4": {
+            "Util\\": "Util/"
+        }
+    },
+    "authors": [
+        {
+            "name": "angela",
+            "email": "angela@trustedtechsupport.com"
+        }
+    ],
+    "require": {}
+}
