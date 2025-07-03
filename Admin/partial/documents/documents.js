@@ -1,6 +1,30 @@
 (function($) {
+    let $documentForm;
     const pageInit = function() {
-        console.log("documents.js");
+        $documentForm = $('#documentForm');
+
+        handleDocumentForm()
+    }
+
+    const handleDocumentForm = function () {
+        console.log('handleDocumentForm');
+        $('#documentUpload').on('change', function (e) {
+            e.preventDefault();
+            console.log(e);
+
+            $.post(DP_AJAX_URL, {
+                action: 'dp_document',
+                data: $('#documentUpload').files
+            }, function (response){
+                if (response.status === 'success') {
+                    toastr.success(response.message);
+                    console.log(response);
+                } else {
+                    toastr.error(response.message);
+                }
+            })
+            $documentForm.children('input').val('');
+        });
     }
 
     $(document).ready(function() {

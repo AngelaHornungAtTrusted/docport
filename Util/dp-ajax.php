@@ -20,6 +20,7 @@ function wp_ajax_dp_campaign() {
             //new campaign
             //todo implement adding custom settings for each campaign into the campaign settings table
             try {
+
                 if (!isset($_POST['data']['title']) || !isset($_POST['data']['active'])) {
                     $response->code = 400;
                     $response->status = 'error';
@@ -29,7 +30,7 @@ function wp_ajax_dp_campaign() {
                 }
 
                 $title = sanitize_text_field($_POST['data']['title']);
-                $active = ($_POST['data']['active'] == 'true') ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
+                $active = ($_POST['data']['active'] == "true") ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
 
                 $wpdb->insert(
                     DP_TABLE_CAMPAIGNS,
@@ -65,9 +66,10 @@ function wp_ajax_dp_campaign() {
                     $response->status = 'success';
                     $response->message = 'Campaign Deleted';
                 } else {
+
                     //not id only means update
                     $title = sanitize_text_field($_POST['data']['title']);
-                    $active = ($_POST['data']['active'] = 'true') ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
+                    $active = ($_POST['data']['active'] == "true") ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
 
                     $wpdb->update(
                         DP_TABLE_CAMPAIGNS,
@@ -156,7 +158,7 @@ function wp_ajax_dp_category() {
                 }
 
                 $title = sanitize_text_field($_POST['data']['title']);
-                $active = ($_POST['data']['active'] == 'true') ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
+                $active = ($_POST['data']['active'] == "true") ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
 
                 $wpdb->insert(
                     DP_TABLE_CATEGORIES,
@@ -194,7 +196,7 @@ function wp_ajax_dp_category() {
                 } else {
                     //not id only means update
                     $title = sanitize_text_field($_POST['data']['title']);
-                    $active = ($_POST['data']['active'] = 'true') ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
+                    $active = ($_POST['data']['active'] == "true") ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
 
                     $wpdb->update(
                         DP_TABLE_CATEGORIES,
@@ -258,6 +260,8 @@ function wp_ajax_dp_category() {
 
 function wp_ajax_dp_document() {
     //todo implement document management
+    var_dump($_POST);
+    die();
 }
 
 function wp_ajax_dp_platform() {
@@ -287,7 +291,7 @@ function wp_ajax_dp_platform() {
                 }
 
                 $title = sanitize_text_field($_POST['data']['title']);
-                $active = ($_POST['data']['active'] == 'true') ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
+                $active = ($_POST['data']['active'] == "true") ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
 
                 $wpdb->insert(
                     DP_TABLE_PLATFORMS,
@@ -325,7 +329,7 @@ function wp_ajax_dp_platform() {
                 } else {
                     //not id only means update
                     $title = sanitize_text_field($_POST['data']['title']);
-                    $active = ($_POST['data']['active'] = 'true') ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
+                    $active = ($_POST['data']['active'] == "true") ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
 
                     $wpdb->update(
                         DP_TABLE_PLATFORMS,
@@ -638,7 +642,7 @@ function wp_ajax_dp_doc_cat() {
     wp_send_json($response);
 }
 
-function wp_ajax_dp_doc_platform() {
+function wp_ajax_dp_doc_plat() {
     global $wpdb;
     $response = new stdClass();
 

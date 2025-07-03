@@ -28,6 +28,15 @@ add_action('admin_enqueue_scripts', 'my_plugin_enqueue_admin_scripts');
 /*add_action('admin_post_dp_export_action', 'dp_export_data');
 add_action('admin_footer', 'export_button');*/
 
+/* Ajax Actions */
+add_action('wp_ajax_dp_campaign', 'wp_ajax_dp_campaign');
+add_action('wp_ajax_dp_category', 'wp_ajax_dp_category');
+add_action('wp_ajax_dp_document', 'wp_ajax_dp_document');
+add_action('wp_ajax_dp_platform', 'wp_ajax_dp_platform');
+add_action('wp_ajax_dp_doc_cam', 'wp_ajax_dp_doc_cam');
+add_action('wp_ajax_dp_doc_cat', 'wp_ajax_dp_doc_cat');
+add_action('wp_ajax_dp_doc_plat', 'wp_ajax_dp_doc_plat');
+
 function dp_activate() {
 	try{
 		//make sure tables exist, dbDelta makes sure there are no duplicates
@@ -70,5 +79,7 @@ function my_plugin_enqueue_admin_scripts($hook): void {
 
     wp_enqueue_script('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/toastr.js', array('jquery'));
     wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css');
+
+    wp_enqueue_script('fontawesome', 'https://kit.fontawesome.com/9548fb5f16.js');
 }
 ?>
