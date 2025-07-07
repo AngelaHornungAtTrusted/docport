@@ -30,8 +30,8 @@
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link" id="organization-tab" data-bs-toggle="tab" data-bs-target="#oranization" type="button"
-                role="tab" aria-controls="documents" aria-selected="false">Organization
+        <button class="nav-link" id="organization-tab" data-bs-toggle="tab" data-bs-target="#organization" type="button"
+                role="tab" aria-controls="organization" aria-selected="false">Organization
         </button>
     </li>
 </ul>
@@ -64,6 +64,12 @@
         <div class="wrap">
             <?php include(plugin_dir_path(__FILE__) . 'partial/platforms/platforms.php'); ?>
             <?php wp_enqueue_script('platforms-js', DP_ADMIN_URL . '/partial/platforms/platforms.js"', array('jquery')); ?>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="organization" role="tabpanel" aria-labelledby="organization-tab">
+        <div class="wrap">
+            <?php include(plugin_dir_path(__FILE__) . 'partial/organization/organization.php'); ?>
+            <?php wp_enqueue_script('platforms-js', DP_ADMIN_URL . '/partial/organization/organization.js"', array('jquery')); ?>
         </div>
     </div>
 </div>
