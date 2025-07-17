@@ -65,7 +65,7 @@
 
         $.each(data, function (key, document) {
             //set document row
-            $documentTable.append('<tr>' +
+            $documentTable.append('<tr id="document-row-' + document.id + '">' +
                 '<td><input id="document-title-' + document.id + '" type="text" value="' + document.title + '"></td>' +
                 '<td><div class="dropdown"><button class="document-campaign-select" id="document-campaign-' + document.id + '">Select Campaigns</button><div class="options-campaigns dropdown-content campaigns-' + document.id + '"></div></div></td>' +
                 '<td><div class="dropdown"><button class="document-category-select" id="document-category-' + document.id + '">Select Categories</button><div class="options-categories dropdown-content categories-' + document.id + '"></div></div></td>' +
@@ -171,7 +171,18 @@
 
     const documentDeleteInit = function () {
         $('.document-delete').off('click').on('click', function (e) {
-            console.log(e.currentTarget.id);
+            $.post(DP_AJAX_URL, {
+                action: 'dp_document',
+                data: {
+                    id: e.currentTarget.id.split('-')[2]
+                }
+            }, function (response){
+                if (response.status === 'success') {
+                    $('#document-row-' + e.currentTarget.id.split('-')[2]).remove();
+                } else {
+                    toastr.error(response.message);
+                }
+            })
         })
     }
 
@@ -199,10 +210,10 @@
                         'thumbnail': selection.icon
                     }
                 }, function (response) {
-                    if (response === 'success') {
-                        toastr.success(response.message);
+                    if (response.status === 'success') {
+                        location.reload();
                     } else {
-                        toastr.error(response.message);
+                        toastr.success(response.message);
                     }
                 })
             });

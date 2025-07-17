@@ -312,7 +312,11 @@ function wp_ajax_dp_document()
                 //id only means delete
 
                 try {
+                    //delete document reference and all associations
                     $wpdb->delete(DP_TABLE_DOCUMENTS, array('id' => $id));
+                    $wpdb->delete(DP_TABLE_DOCUMENT_CAMPAIGNS, array('doc_id' => $id));
+                    $wpdb->delete(DP_TABLE_DOCUMENT_CATEGORIES, array('doc_id' => $id));
+                    $wpdb->delete(DP_TABLE_DOCUMENT_PLATFORMS, array('doc_id' => $id));
 
                     $response->code = 200;
                     $response->status = 'success';
