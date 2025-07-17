@@ -1,7 +1,8 @@
 <?php
 
 /* Entity Tables Management */
-function wp_ajax_dp_campaign() {
+function wp_ajax_dp_campaign()
+{
     global $wpdb;
     $response = new stdClass();
 
@@ -131,7 +132,8 @@ function wp_ajax_dp_campaign() {
     wp_send_json($response);
 }
 
-function wp_ajax_dp_category() {
+function wp_ajax_dp_category()
+{
     global $wpdb;
     $response = new stdClass();
 
@@ -258,13 +260,135 @@ function wp_ajax_dp_category() {
     wp_send_json($response);
 }
 
-function wp_ajax_dp_document() {
-    //todo implement document management
-    var_dump($_POST);
-    die();
+function wp_ajax_dp_document()
+{
+    global $wpdb;
+    $response = new stdClass();
+    if (!current_user_can('administrator')) {
+        $response->code = 403;
+        $response->status = 'error';
+        $response->message = 'Unauthorized User';
+
+        wp_send_json($response);
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (!isset($_POST['data']['id'])) {
+            //no id means new document
+            if (!isset($_POST['data']['title']) || !isset($_POST['data']['path'])) {
+                $response->code = 400;
+                $response->status = 'error';
+                $response->message = 'Missing required fields';
+
+                wp_send_json($response);
+            }
+
+            try {
+                $wpdb->insert(
+                    DP_TABLE_DOCUMENTS,
+                    array(
+                        'title' => $_POST['data']['title'],
+                        'path' => $_POST['data']['path'],
+                        'thumbnail' => $_POST['data']['thumbnail'],
+                        'active' => DP_STATUS_ACTIVE,
+                        'create_date' => gmdate('Y-m-d H:i:s'),
+                        'update_date' => gmdate('Y-m-d H:i:s'),
+                    )
+                );
+
+                $response->code = 200;
+                $response->status = 'success';
+                $response->message = 'Document Created';
+            } catch (Exception $e) {
+                $response->code = 500;
+                $response->status = 'error';
+                $response->message = $e->getMessage();
+            }
+        } else {
+            //id means existing document
+            $id = intval($_POST['data']['id']);
+
+            if (!isset($_POST['data']['title'])) {
+                //id only means delete
+
+                try {
+                    $wpdb->delete(DP_TABLE_DOCUMENTS, array('id' => $id));
+
+                    $response->code = 200;
+                    $response->status = 'success';
+                    $response->message = 'Document Deleted';
+                } catch (Exception $e) {
+                    $response->code = 500;
+                    $response->status = 'error';
+                    $response->message = $e->getMessage();
+                }
+            } else {
+                try {
+                    $title = sanitize_text_field($_POST['data']['title']);
+                    $url = sanitize_text_field($_POST['data']['path']);
+                    $thumbnail = sanitize_text_field($_POST['data']['thumbnail']);
+                    $active = (intval($_POST['data']['active']) == 1) ? DP_STATUS_ACTIVE : DP_STATUS_INACTIVE;
+
+                    try {
+                        $wpdb->update(
+                            DP_TABLE_DOCUMENTS,
+                            array(
+                                'title' => $title,
+                                'path' => $url,
+                                'thumbnail' => $thumbnail,
+                                'active' => $active,
+                                'update_date' => gmdate('Y-m-d H:i:s'),
+                            ),
+                            array('id' => $id)
+                        );
+                    } catch (Exception $e) {
+                        $response->code = 500;
+                        $response->status = 'error';
+                        $response->message = $e->getMessage();
+                    }
+                } catch (Exception $e) {
+                    $response->code = 500;
+                    $response->status = 'error';
+                    $response->message = $e->getMessage();
+                }
+            }
+        }
+    } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        //todo implement get methods
+        if (!isset($_GET['data']['id'])) {
+            //no id means get all documents
+            try {
+                $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENTS);
+
+                $response->code = 200;
+                $response->status = 'success';
+                $response->data = $data;
+            } catch (Exception $e) {
+                $response->code = 500;
+                $response->status = 'error';
+                $response->message = $e->getMessage();
+            }
+        } else {
+            $id = intval($_POST['data']['id']);
+
+            try {
+                $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENTS . " WHERE id = " . $id);
+
+                $response->code = 200;
+                $response->status = 'success';
+                $response->data = $data;
+            } catch (Exception $e) {
+                $response->code = 500;
+                $response->status = 'error';
+                $response->message = $e->getMessage();
+            }
+        }
+    }
+    wp_send_json($response);
 }
 
-function wp_ajax_dp_platform() {
+function wp_ajax_dp_platform()
+{
     global $wpdb;
     $response = new stdClass();
 
@@ -392,7 +516,8 @@ function wp_ajax_dp_platform() {
 }
 
 /* Relational Tables Management */
-function wp_ajax_dp_doc_cam() {
+function wp_ajax_dp_doc_cam()
+{
     global $wpdb;
     $response = new stdClass();
 
@@ -404,11 +529,18 @@ function wp_ajax_dp_doc_cam() {
         wp_send_json($response);
     }
 
+    if (!isset($_POST['data']['docId']) || !isset($_POST['data']['camId']) || !isset($_POST['data']['checked'])) {
+        $response->code = 400;
+        $response->status = 'error';
+        $response->message = 'Missing Parameters';
+    }
+
     //determine call type
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //determine if new or existing
-        if (!isset($_POST['data']['id'])) {
-            //no id means new
+
+        if ($_POST['data']['checked'] == "true") {
+            //true means checked so create new association
             try {
                 $docId = intval($_POST['data']['docId']);
                 $camId = intval($_POST['data']['camId']);
@@ -432,45 +564,23 @@ function wp_ajax_dp_doc_cam() {
                 $response->message = $e->getMessage();
             }
         } else {
-            //determine if update or delete
-            if (!isset($_POST['data']['docId'])) {
-                //no doc id means delete
-                try {
-                    $id = intval($_POST['data']['id']);
+            //if unchecked we delete
+            try {
+                $docId = intval($_POST['data']['docId']);
+                $camId = intval($_POST['data']['camId']);
 
-                    $wpdb->delete(
-                        DP_TABLE_DOCUMENT_CAMPAIGNS,
-                        array('id' => $id),
-                    );
+                $wpdb->delete(
+                    DP_TABLE_DOCUMENT_CAMPAIGNS,
+                    array('doc_id' => $docId, 'cam_id' => $camId),
+                );
 
-                    $response->code = 200;
-                    $response->status = 'success';
-                    $response->message = 'Document Association Deleted';
-                } catch (Exception $e) {
-                    $response->code = 500;
-                    $response->status = 'error';
-                    $response->message = $e->getMessage();
-                }
-            } else {
-                try{
-                    $id = intval($_POST['data']['id']);
-                    $docId = intval($_POST['data']['docId']);
-                    $camId = intval($_POST['data']['camId']);
-
-                    $wpdb->update(
-                        DP_TABLE_DOCUMENT_CAMPAIGNS,
-                        array(
-                            'doc_id' => $docId,
-                            'cam_id' => $camId,
-                            'update_date' => gmdate('Y-m-d H:i:s')
-                        ),
-                        array('id' => $id),
-                    );
-                } catch (Exception $e) {
-                    $response->code = 500;
-                    $response->status = 'error';
-                    $response->message = $e->getMessage();
-                }
+                $response->code = 200;
+                $response->status = 'success';
+                $response->message = 'Document Association Deleted';
+            } catch (Exception $e) {
+                $response->code = 500;
+                $response->status = 'error';
+                $response->message = $e->getMessage();
             }
         }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -479,7 +589,7 @@ function wp_ajax_dp_doc_cam() {
         if (!isset($_GET['data']['id'])) {
             //if docId then all associations for a document, otherwise all associations for a campaign
             if (!isset($_GET['data']['docId'])) {
-                try{
+                try {
                     $docId = intval($_GET['data']['docId']);
                     $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENT_CAMPAIGNS . " WHERE doc_id = " . $docId);
 
@@ -517,7 +627,8 @@ function wp_ajax_dp_doc_cam() {
     wp_send_json($response);
 }
 
-function wp_ajax_dp_doc_cat() {
+function wp_ajax_dp_doc_cat()
+{
     global $wpdb;
     $response = new stdClass();
 
@@ -529,11 +640,18 @@ function wp_ajax_dp_doc_cat() {
         wp_send_json($response);
     }
 
+    if (!isset($_POST['data']['docId']) || !isset($_POST['data']['catId']) || !isset($_POST['data']['checked'])) {
+        $response->code = 400;
+        $response->status = 'error';
+        $response->message = 'Missing Parameters';
+    }
+
     //determine call type
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //determine if new or existing
-        if (!isset($_POST['data']['id'])) {
-            //no id means new
+
+        if ($_POST['data']['checked'] == "true") {
+            //true means checked so create new association
             try {
                 $docId = intval($_POST['data']['docId']);
                 $catId = intval($_POST['data']['catId']);
@@ -557,45 +675,23 @@ function wp_ajax_dp_doc_cat() {
                 $response->message = $e->getMessage();
             }
         } else {
-            //determine if update or delete
-            if (!isset($_POST['data']['docId'])) {
-                //no doc id means delete
-                try {
-                    $id = intval($_POST['data']['id']);
+            //if unchecked we delete
+            try {
+                $docId = intval($_POST['data']['docId']);
+                $catId = intval($_POST['data']['catId']);
 
-                    $wpdb->delete(
-                        DP_TABLE_DOCUMENT_CATEGORIES,
-                        array('id' => $id),
-                    );
+                $wpdb->delete(
+                    DP_TABLE_DOCUMENT_CATEGORIES,
+                    array('doc_id' => $docId, 'cat_id' => $catId),
+                );
 
-                    $response->code = 200;
-                    $response->status = 'success';
-                    $response->message = 'Document Association Deleted';
-                } catch (Exception $e) {
-                    $response->code = 500;
-                    $response->status = 'error';
-                    $response->message = $e->getMessage();
-                }
-            } else {
-                try{
-                    $id = intval($_POST['data']['id']);
-                    $docId = intval($_POST['data']['docId']);
-                    $catId = intval($_POST['data']['catId']);
-
-                    $wpdb->update(
-                        DP_TABLE_DOCUMENT_CATEGORIES,
-                        array(
-                            'doc_id' => $docId,
-                            'cat_id' => $catId,
-                            'update_date' => gmdate('Y-m-d H:i:s')
-                        ),
-                        array('id' => $id),
-                    );
-                } catch (Exception $e) {
-                    $response->code = 500;
-                    $response->status = 'error';
-                    $response->message = $e->getMessage();
-                }
+                $response->code = 200;
+                $response->status = 'success';
+                $response->message = 'Document Association Deleted';
+            } catch (Exception $e) {
+                $response->code = 500;
+                $response->status = 'error';
+                $response->message = $e->getMessage();
             }
         }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -604,7 +700,7 @@ function wp_ajax_dp_doc_cat() {
         if (!isset($_GET['data']['id'])) {
             //if docId then all associations for a document, otherwise all associations for a campaign
             if (!isset($_GET['data']['docId'])) {
-                try{
+                try {
                     $docId = intval($_GET['data']['docId']);
                     $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENT_CATEGORIES . " WHERE doc_id = " . $docId);
 
@@ -642,7 +738,8 @@ function wp_ajax_dp_doc_cat() {
     wp_send_json($response);
 }
 
-function wp_ajax_dp_doc_plat() {
+function wp_ajax_dp_doc_plat()
+{
     global $wpdb;
     $response = new stdClass();
 
@@ -654,17 +751,24 @@ function wp_ajax_dp_doc_plat() {
         wp_send_json($response);
     }
 
+    if (!isset($_POST['data']['docId']) || !isset($_POST['data']['platId']) || !isset($_POST['data']['checked'])) {
+        $response->code = 400;
+        $response->status = 'error';
+        $response->message = 'Missing Parameters';
+    }
+
     //determine call type
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //determine if new or existing
-        if (!isset($_POST['data']['id'])) {
-            //no id means new
+
+        if ($_POST['data']['checked'] == "true") {
+            //true means checked so create new association
             try {
                 $docId = intval($_POST['data']['docId']);
                 $platId = intval($_POST['data']['platId']);
 
                 $wpdb->insert(
-                    DP_TABLE_DOCUMENTS_PLATFORMS,
+                    DP_TABLE_DOCUMENT_PLATFORMS,
                     array(
                         'doc_id' => $docId,
                         'plat_id' => $platId,
@@ -682,45 +786,23 @@ function wp_ajax_dp_doc_plat() {
                 $response->message = $e->getMessage();
             }
         } else {
-            //determine if update or delete
-            if (!isset($_POST['data']['docId'])) {
-                //no doc id means delete
-                try {
-                    $id = intval($_POST['data']['id']);
+            //if unchecked we delete
+            try {
+                $docId = intval($_POST['data']['docId']);
+                $platId = intval($_POST['data']['platId']);
 
-                    $wpdb->delete(
-                        DP_TABLE_DOCUMENTS_PLATFORMS,
-                        array('id' => $id),
-                    );
+                $wpdb->delete(
+                    DP_TABLE_DOCUMENT_PLATFORMS,
+                    array('doc_id' => $docId, 'plat_id' => $platId),
+                );
 
-                    $response->code = 200;
-                    $response->status = 'success';
-                    $response->message = 'Document Association Deleted';
-                } catch (Exception $e) {
-                    $response->code = 500;
-                    $response->status = 'error';
-                    $response->message = $e->getMessage();
-                }
-            } else {
-                try{
-                    $id = intval($_POST['data']['id']);
-                    $docId = intval($_POST['data']['docId']);
-                    $platId = intval($_POST['data']['platId']);
-
-                    $wpdb->update(
-                        DP_TABLE_DOCUMENT_CATEGORIES,
-                        array(
-                            'doc_id' => $docId,
-                            'plat_id' => $platId,
-                            'update_date' => gmdate('Y-m-d H:i:s')
-                        ),
-                        array('id' => $id),
-                    );
-                } catch (Exception $e) {
-                    $response->code = 500;
-                    $response->status = 'error';
-                    $response->message = $e->getMessage();
-                }
+                $response->code = 200;
+                $response->status = 'success';
+                $response->message = 'Document Association Deleted';
+            } catch (Exception $e) {
+                $response->code = 500;
+                $response->status = 'error';
+                $response->message = $e->getMessage();
             }
         }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -729,9 +811,9 @@ function wp_ajax_dp_doc_plat() {
         if (!isset($_GET['data']['id'])) {
             //if docId then all associations for a document, otherwise all associations for a campaign
             if (!isset($_GET['data']['docId'])) {
-                try{
+                try {
                     $docId = intval($_GET['data']['docId']);
-                    $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENTS_PLATFORMS . " WHERE doc_id = " . $docId);
+                    $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENT_PLATFORMS . " WHERE doc_id = " . $docId);
 
                     $response->code = 200;
                     $response->status = 'success';
@@ -745,7 +827,7 @@ function wp_ajax_dp_doc_plat() {
             } else {
                 try {
                     $platId = intval($_GET['data']['platId']);
-                    $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENTS_PLATFORMS . " WHERE plat_id = " . $platId);
+                    $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENT_PLATFORMS . " WHERE plat_id = " . $platId);
 
                     $response->code = 200;
                     $response->status = 'success';

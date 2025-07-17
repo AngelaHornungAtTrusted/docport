@@ -33,7 +33,7 @@ define('DP_TABLE_PLATFORMS', DP_DB_PREFIX . 'platforms');
 //relational tables
 define('DP_TABLE_DOCUMENT_CAMPAIGNS', DP_DB_PREFIX . 'document_campaigns');
 define('DP_TABLE_DOCUMENT_CATEGORIES', DP_DB_PREFIX . 'document_categories');
-define('DP_TABLE_DOCUMENTS_PLATFORMS', DP_DB_PREFIX . 'document_platforms');
+define('DP_TABLE_DOCUMENT_PLATFORMS', DP_DB_PREFIX . 'document_platforms');
 
 //settings tables
 define('DP_TABLE_SETTINGS', DP_DB_PREFIX . 'settings');
