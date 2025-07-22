@@ -61,7 +61,7 @@ class DbTableManager
         update_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         PRIMARY KEY  (id)
         ) $charset_collate;
-        CREATE TABLE " . DP_TABLE_DOCUMENTS_PLATFORMS . " (
+        CREATE TABLE " . DP_TABLE_DOCUMENT_PLATFORMS . " (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         doc_id mediumint(9) NOT NULL DEFAULT '0',
         plat_id mediumint(9) NOT NULL DEFAULT '0',

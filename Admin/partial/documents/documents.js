@@ -1,6 +1,6 @@
 (function ($) {
     let $fileSelect, $documentTable;
-    let campaigns, categories;
+    let campaigns, categories, platforms;
 
     const pageInit = function () {
         $fileSelect = $('#documentUpload');
@@ -8,7 +8,13 @@
 
         $fileSelect.on('click', openMediaUploader);
 
+        //get select variables
         getCampaigns();
+        getCategories();
+        getPlatforms();
+
+        //get documents and associations
+        getDocuments();
     }
 
     const getCampaigns = function () {
@@ -17,53 +23,56 @@
             action: 'dp_campaign'
         }, function (response) {
             if (response.status === 'success') {
-                getCategories(response.data);
+                campaigns = response.data;
             } else {
                 toastr.error(response.message);
             }
         });
     }
 
-    const getCategories = function (campaigns) {
+    const getCategories = function () {
         //grab categories list
         $.get(DP_AJAX_URL, {
             action: 'dp_category'
         }, function (response) {
             if (response.status === 'success') {
-                getPlatforms(campaigns, response.data);
+                categories = response.data;
             } else {
                 toastr.error(response.message);
             }
         });
     }
 
-    const getPlatforms = function (campaigns, categories) {
+    const getPlatforms = function () {
         $.get(DP_AJAX_URL, {
             action: 'dp_platform'
         }, function (response) {
             if (response.status === 'success') {
-                getDocuments(campaigns, categories, response.data)
+                platforms = response.data;
             } else {
                 toastr.error(response.message);
             }
         })
     }
 
-    const getDocuments = function (campaigns, categories, platforms) {
+    const getDocuments = function () {
         $.get(DP_AJAX_URL, {
             action: 'dp_document',
         }, function (response) {
             if (response.status === 'success') {
-                documentPanelInit(response.data, campaigns, categories, platforms);
+                //set up document table
+                documentPanelInit(response.data);
             } else {
                 toastr.error(response.message);
             }
         });
     }
 
-    const documentPanelInit = function (data, campaigns, categories, platforms) {
+    const documentPanelInit = function (data) {
+        console.log(campaigns);
 
-        $.each(data, function (key, document) {
+        //todo find more efficient manner of doing this
+        $.each(data.documents, function (key, document) {
             //set document row
             $documentTable.append('<tr id="document-row-' + document.id + '">' +
                 '<td><input id="document-title-' + document.id + '" type="text" value="' + document.title + '"></td>' +
@@ -73,41 +82,40 @@
                 '<td><a class="btn btn-danger document-delete" id="document-delete-' + document.id + '" style="background-color: red; color: white;"><i class="fa fa-trash"></i></a></td>' +
                 '</tr>');
 
-            //set campaign options (done here so we have document id in option which is easier to grab on click)
             $.each(campaigns, function (key, campaign) {
-                $('.campaigns-' + document.id).append('<label for="campaign-option-' + campaign.id + '">' + campaign.title + '</label><input class="campaign-option" type="checkbox" id="campaign-option-' + document.id + '" value="' + campaign.id + '">')
+                $('.campaigns-' + document.id).append('<label for="campaign-option-' + campaign.id + document.id + '">' + campaign.title + '</label><input class="campaign-option" type="checkbox" id="campaign-option-' + campaign.id + document.id + '" value="' + campaign.id + '">');
             });
 
-            //set category options (done here so we have document id in option which is easier to grab on click)
             $.each(categories, function (key, category) {
-                $('.categories-' + document.id).append('<label for="campaign-option-' + category.id + '">' + category.title + '</label><input class="category-option" type="checkbox" id="category-option-' + document.id + '" value="' + category.id + '">')
+                $('.categories-' + document.id).append('<label for="category-option-' + category.id + document.id + '">' + category.title + '</label><input class="category-option" type="checkbox" id="category-option-' + category.id + document.id + '" value="' + category.id + '">');
             });
 
-            //set platform options (done here so we have document id in option which is easier to grab on click)
             $.each(platforms, function (key, platform) {
-                $('.platforms-' + document.id).append('<label for="platform-option-' + platform.id + '">' + platform.title + '</label><input class="platform-option" type="checkbox" id="platform-option-' + document.id + '" value="' + platform.id + '">');
+                $('.platforms-' + document.id).append('<label for="platform-option-' + platform.id + document.id + '">' + platform.title + '</label><input class="platform-option" type="checkbox" id="platform-option-' + platform.id + document.id + '" value="' + platform.id + '">');
             });
-        });
 
-        setSelectSelects(data);
-    }
-
-    const setSelectSelects = function (documents) {
-        $.each(documents, function(key, document){
-            //grab document associations
-            $.get(DP_AJAX_URL, {
-                action: 'dp_doc_cam',
-                data: {
-                    'documentId': document.id
+            $.each(data.cams, function(key, cam){
+                if (cam.doc_id === document.id) {
+                    $('#campaign-option-' + cam.cam_id + document.id).attr('checked', true);
                 }
-            }, function (response){
-                if (response.status === 'success') {
-                    console.log(response.data);
-                } else {
-                    toastr.error(response.message);
+            });
+
+            $.each(data.cats, function(key, cat){
+                console.log(cat);
+                if (cat.doc_id === document.id) {
+                    $('#category-option-' + cat.cat_id + document.id).attr('checked', true);
+                }
+            });
+
+            $.each(data.plats, function(key, plat) {
+                console.log(plat);
+                if (plat.doc_id === document.id) {
+                    $('#platform-option-' + plat.plat_id + document.id).attr('checked', true);
                 }
             })
         });
+
+        panelActionsInit();
     }
 
     const panelActionsInit = function () {
@@ -141,7 +149,7 @@
             action: 'dp_doc_cam',
             data: {
                 camId: e.currentTarget.value,
-                docId: e.currentTarget.id.split('-')[2],
+                docId: e.target.parentElement.classList[2].split('-')[1],
                 checked: e.currentTarget.checked
             }
         }, function (response){
@@ -158,7 +166,7 @@
             action: 'dp_doc_cat',
             data: {
                 catId: e.currentTarget.value,
-                docId: e.currentTarget.id.split('-')[2],
+                docId: e.target.parentElement.classList[2].split('-')[1],
                 checked: e.currentTarget.checked
             }
         }, function (response) {
@@ -171,11 +179,13 @@
     }
 
     const documentPlatformUpdate = function (e) {
+        console.log(e.currentTarget);
+
         $.post(DP_AJAX_URL, {
             action: 'dp_doc_plat',
             data: {
                 platId: e.currentTarget.value,
-                docId: e.currentTarget.id.split('-')[2],
+                docId: e.target.parentElement.classList[2].split('-')[1],
                 checked: e.currentTarget.checked
             }
         }, function (response){
@@ -272,3 +282,36 @@
         return objectData;
     };
 })(jQuery);
+
+/*
+ $.each(data, function (key, document) {
+            console.log(document);
+
+            //set document row
+            $documentTable.append('<tr id="document-row-' + document.id + '">' +
+                '<td><input id="document-title-' + document.id + '" type="text" value="' + document.title + '"></td>' +
+                '<td><div class="dropdown"><button class="document-campaign-select" id="document-campaign-' + document.id + '">Select Campaigns</button><div class="options-campaigns dropdown-content campaigns-' + document.id + '"></div></div></td>' +
+                '<td><div class="dropdown"><button class="document-category-select" id="document-category-' + document.id + '">Select Categories</button><div class="options-categories dropdown-content categories-' + document.id + '"></div></div></td>' +
+                '<td><div class="dropdown"><button class="document-platform-select" id="document-platform-' + document.id + '">Select Platforms</button><div class="options-platforms dropdown-content platforms-' + document.id + '"></div></div></td>' +
+                '<td><a class="btn btn-danger document-delete" id="document-delete-' + document.id + '" style="background-color: red; color: white;"><i class="fa fa-trash"></i></a></td>' +
+                '</tr>');
+
+            //done this way as each has the document.id for easier applying upon change
+            //set campaign options (done here so we have document id in option which is easier to grab on click)
+            $.each(campaigns, function (key, campaign) {
+                $('.campaigns-' + document.id).append('<label for="campaign-option-' + campaign.id + '">' + campaign.title + '</label><input class="campaign-option" type="checkbox" id="campaign-option-' + document.id + '" value="' + campaign.id + '">')
+            });
+
+            //set category options (done here so we have document id in option which is easier to grab on click)
+            $.each(categories, function (key, category) {
+                $('.categories-' + document.id).append('<label for="campaign-option-' + category.id + '">' + category.title + '</label><input class="category-option" type="checkbox" id="category-option-' + document.id + '" value="' + category.id + '">')
+            });
+
+            //set platform options (done here so we have document id in option which is easier to grab on click)
+            $.each(platforms, function (key, platform) {
+                $('.platforms-' + document.id).append('<label for="platform-option-' + platform.id + '">' + platform.title + '</label><input class="platform-option" type="checkbox" id="platform-option-' + document.id + '" value="' + platform.id + '">');
+            });
+        });
+
+        panelActionsInit();
+ */

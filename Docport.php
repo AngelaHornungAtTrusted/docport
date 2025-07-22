@@ -15,6 +15,7 @@ require_once(DP_ROOT_DIR_PATH . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
 require_once(DP_UTIL_DIR_PATH . DIRECTORY_SEPARATOR . 'dp-ajax.php');
 
 /* variables & objects */
+
 use Util\DbTableManager;
 
 /* Plugin Activation & Installation Management Hooks */
@@ -37,43 +38,48 @@ add_action('wp_ajax_dp_doc_cam', 'wp_ajax_dp_doc_cam');
 add_action('wp_ajax_dp_doc_cat', 'wp_ajax_dp_doc_cat');
 add_action('wp_ajax_dp_doc_plat', 'wp_ajax_dp_doc_plat');
 
-function dp_activate() {
-	try{
-		//make sure tables exist, dbDelta makes sure there are no duplicates
+function dp_activate()
+{
+    try {
+        //make sure tables exist, dbDelta makes sure there are no duplicates
         global $wpdb;
 
-		$dpTableManager = new DbTableManager($wpdb);
-		$dpTableManager->initTables();
+        $dpTableManager = new DbTableManager($wpdb);
+        $dpTableManager->initTables();
         $dpTableManager->insertCategory('test');
-	} catch (\Exception $e) {
-		//todo implement cleaner and more proper error reporting
-		var_dump($e->getMessage());
-	}
+    } catch (\Exception $e) {
+        //todo implement cleaner and more proper error reporting
+        var_dump($e->getMessage());
+    }
 }
 
-function docport_menu() {
-	add_menu_page(
-		'Docport Management', // Page title (for the admin panel)
-		'Docport', // Menu title (what users see)
-		'manage_options', // Required capability
-		'docport-page', // Menu slug (unique identifier)
-		'docport_page_content' // Callback function to display content
-	);
+function docport_menu()
+{
+    add_menu_page(
+        'Docport Management', // Page title (for the admin panel)
+        'Docport', // Menu title (what users see)
+        'manage_options', // Required capability
+        'docport-page', // Menu slug (unique identifier)
+        'docport_page_content' // Callback function to display content
+    );
 }
 
-function docport_page_content() {
+function docport_page_content()
+{
     global $wpdb;
     $dbTableManager = new DbTableManager($wpdb);
     ?>
     <div class="wrap">
-		<?php include( plugin_dir_path( __FILE__ ) . 'Admin/admin.php' ); ?>
-        <?php wp_enqueue_script('admin-js', DP_ADMIN_URL . '/admin.js"', array('jquery')); ?>
+        <?php wp_enqueue_style('bootstrap-css', DP_ASSETS_URL . '/bootstrap/css/bootstrap.css"'); ?>
+        <?php wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"'); ?>
+        <?php include(plugin_dir_path(__FILE__) . 'Admin/admin.php'); ?>
     </div>
-	<?php
+    <?php
 }
 
 //sets up export url for export button and admin.js
-function my_plugin_enqueue_admin_scripts($hook): void {
+function my_plugin_enqueue_admin_scripts($hook): void
+{
     wp_enqueue_style('bootstrap-css', DP_ASSETS_URL . '/bootstrap/css/bootstrap.css"');
     wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"');
 
@@ -82,4 +88,5 @@ function my_plugin_enqueue_admin_scripts($hook): void {
 
     wp_enqueue_script('fontawesome', 'https://kit.fontawesome.com/9548fb5f16.js');
 }
+
 ?>

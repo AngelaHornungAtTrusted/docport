@@ -380,7 +380,10 @@ function wp_ajax_dp_document()
         if (!isset($_GET['data']['id'])) {
             //no id means get all documents
             try {
-                $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENTS);
+                $data = ['documents' => $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENTS),
+                    'cams' => $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENT_CAMPAIGNS),
+                    'cats' => $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENT_CATEGORIES),
+                    'plats' => $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENT_PLATFORMS)];
 
                 $response->code = 200;
                 $response->status = 'success';
