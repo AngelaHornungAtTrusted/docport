@@ -94,18 +94,36 @@ function wp_ajax_dp_campaign()
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
         //determine if specific or all
         if (!isset($_GET['data']['campaignId'])) {
-            //return all
-            try {
-                $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_CAMPAIGNS);
+            //check for document id
+            if(!isset($_GET['data']['documentId'])){
+                //return all
+                try {
+                    $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_CAMPAIGNS);
 
-                $response->code = 200;
-                $response->status = 'success';
-                $response->message = 'Campaigns received';
-                $response->data = $data;
-            } catch (Exception $e) {
-                $response->code = 500;
-                $response->status = 'error';
-                $response->message = $e->getMessage();
+                    $response->code = 200;
+                    $response->status = 'success';
+                    $response->message = 'Campaigns received';
+                    $response->data = $data;
+                } catch (Exception $e) {
+                    $response->code = 500;
+                    $response->status = 'error';
+                    $response->message = $e->getMessage();
+                }
+            } else {
+                //return association with document
+                try {
+                    $id = intval($_GET['data']['campaignId']);
+                    $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_CAMPAIGNS . " WHERE id = " . $id);
+
+                    $response->code = 200;
+                    $response->status = 'success';
+                    $response->message = 'Campaign received';
+                    $response->data = $data;
+                } catch (Exception $e) {
+                    $response->code = 500;
+                    $response->status = 'error';
+                    $response->message = $e->getMessage();
+                }
             }
         } else {
             //return specific
@@ -858,3 +876,48 @@ function wp_ajax_dp_doc_plat()
 
 /* Statistical Tables */
 //todo implement request handlers for statistical tables
+
+/* Shortcode Tables Retrieval */
+function wp_ajax_dp_shortcode() {
+    global $wpdb;
+    $response = new stdClass();
+
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        if (isset($_GET['data']['docId'])) {
+            //grab specific doc
+            $docId = intval($_GET['data']['docId']);
+            $data = $wpdb->get_results('SELECT * FROM ' . DP_TABLE_DOCUMENTS . " WHERE id = " . $docId);
+
+            $response->code = 200;
+            $response->status = 'success';
+            $response->message = "Document Grabbed";
+            $response->data = $data;
+        } else {
+            //grab docs by some association type
+            $table = (isset($_GET['data']['camId'])) ? DP_TABLE_DOCUMENT_CAMPAIGNS : ((isset($_GET['data']['catId'])) ? DP_TABLE_DOCUMENT_CATEGORIES : DP_TABLE_DOCUMENT_PLATFORMS);
+            $matchId = (isset($_GET['data']['camId'])) ? 'cam_id' : ((isset($_GET['data']['catId'])) ? 'cat_id' : 'plat_id');
+            $id = (isset($_GET['data']['camId'])) ? intval($_GET['data']['camId']) : ((isset($_GET['data']['catId'])) ? intval($_GET['data']['catId']) : intval($_GET['data']['platId']));
+
+            //grab array of documents ids
+            $docIds = $wpdb->get_results('SELECT * FROM ' . $table . " WHERE " . $matchId . " = " . $id);
+
+            $data = [];
+
+            foreach ($docIds as $docId) {
+                //todo investigate cleaner way to do this
+                $data[$docId] = $wpdb->get_results('SELECT * FROM ' . $table . " WHERE id = " . intval($docId));
+            }
+
+            $response->code = 200;
+            $response->status = 'success';
+            $response->message = "Documents Grabbed";
+            $response->data = $data;
+        }
+    } else {
+        $response->code = 400;
+        $response->status = 'error';
+        $response->message = 'Bad Request';
+    }
+
+    wp_send_json($response);
+}

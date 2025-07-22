@@ -89,7 +89,25 @@
             });
         });
 
-        panelActionsInit();
+        setSelectSelects(data);
+    }
+
+    const setSelectSelects = function (documents) {
+        $.each(documents, function(key, document){
+            //grab document associations
+            $.get(DP_AJAX_URL, {
+                action: 'dp_doc_cam',
+                data: {
+                    'documentId': document.id
+                }
+            }, function (response){
+                if (response.status === 'success') {
+                    console.log(response.data);
+                } else {
+                    toastr.error(response.message);
+                }
+            })
+        });
     }
 
     const panelActionsInit = function () {
@@ -201,7 +219,6 @@
             var selections = uploader.state().get('selection').toJSON();
 
             $.each(selections, function (key, selection) {
-                console.log(selection);
                 $.post(DP_AJAX_URL, {
                     action: 'dp_document',
                     data: {

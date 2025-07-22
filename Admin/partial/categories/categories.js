@@ -3,8 +3,6 @@
     let checked;
 
     const pageInit = function() {
-        console.log('Categories');
-
         //elements
         $categoryForm = $('#categoryForm');
         $categoryButton = $('#categoryButton');
