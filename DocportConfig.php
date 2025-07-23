@@ -24,7 +24,7 @@ global $wpdb;
 define('DP_PLUGIN_PREFIX', 'dp');
 define('DP_DB_PREFIX', 'dp_');
 
-//primary tables
+//tables
 define('DP_TABLE_CAMPAIGNS', DP_DB_PREFIX . 'campaigns');
 define('DP_TABLE_CATEGORIES', DP_DB_PREFIX . 'categories');
 define('DP_TABLE_DOCUMENTS', DP_DB_PREFIX . 'documents');

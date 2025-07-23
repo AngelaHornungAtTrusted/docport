@@ -13,6 +13,7 @@
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DocportConfig.php');
 require_once(DP_ROOT_DIR_PATH . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 require_once(DP_UTIL_DIR_PATH . DIRECTORY_SEPARATOR . 'dp-ajax.php');
+require_once(DP_UTIL_DIR_PATH . DIRECTORY_SEPARATOR .'dp-ajax-shortcode.php');
 
 /* variables & objects */
 
@@ -87,6 +88,37 @@ function my_plugin_enqueue_admin_scripts($hook): void
     wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css');
 
     wp_enqueue_script('fontawesome', 'https://kit.fontawesome.com/9548fb5f16.js');
+}
+
+add_shortcode('docport', 'docport_shortcode');
+
+function docport_shortcode($atts = [], $content = null) {
+
+    //make sure we have what we need
+    if (sizeof($atts) > 2) {
+        //used to determine what we load
+        $campaignId = intval($atts[0]);
+        $categoryId = intval($atts[1]);
+        $platformId = intval($atts[2]);
+
+        ?>
+        <div class="wrap">
+            <?php include(plugin_dir_path(__FILE__) . 'Shortcode/shortcode.php'); ?>
+            <?php wp_enqueue_script('shortcode-js', plugin_dir_url(__FILE__) . 'Shortcode/shortcode.js'); ?>
+            <?php wp_enqueue_style('bootstrap-css', DP_ASSETS_URL . '/bootstrap/css/bootstrap.css"'); ?>
+            <?php wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"'); ?>
+        </div>
+        <?php
+    } else {
+        ?>
+        <div class="wrap">
+            <h2>Missing Parameters</h2>
+            <p>The shortcode template is as follows: [docport campaign_id category_id platform_id]</p>
+            <p>If you want all campaigns, categories or platforms to present and an associated select for filtering, insert
+            a zero for one of the ids.</p>
+        </div>
+<?php
+    }
 }
 
 ?>

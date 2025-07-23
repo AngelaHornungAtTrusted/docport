@@ -282,36 +282,3 @@
         return objectData;
     };
 })(jQuery);
-
-/*
- $.each(data, function (key, document) {
-            console.log(document);
-
-            //set document row
-            $documentTable.append('<tr id="document-row-' + document.id + '">' +
-                '<td><input id="document-title-' + document.id + '" type="text" value="' + document.title + '"></td>' +
-                '<td><div class="dropdown"><button class="document-campaign-select" id="document-campaign-' + document.id + '">Select Campaigns</button><div class="options-campaigns dropdown-content campaigns-' + document.id + '"></div></div></td>' +
-                '<td><div class="dropdown"><button class="document-category-select" id="document-category-' + document.id + '">Select Categories</button><div class="options-categories dropdown-content categories-' + document.id + '"></div></div></td>' +
-                '<td><div class="dropdown"><button class="document-platform-select" id="document-platform-' + document.id + '">Select Platforms</button><div class="options-platforms dropdown-content platforms-' + document.id + '"></div></div></td>' +
-                '<td><a class="btn btn-danger document-delete" id="document-delete-' + document.id + '" style="background-color: red; color: white;"><i class="fa fa-trash"></i></a></td>' +
-                '</tr>');
-
-            //done this way as each has the document.id for easier applying upon change
-            //set campaign options (done here so we have document id in option which is easier to grab on click)
-            $.each(campaigns, function (key, campaign) {
-                $('.campaigns-' + document.id).append('<label for="campaign-option-' + campaign.id + '">' + campaign.title + '</label><input class="campaign-option" type="checkbox" id="campaign-option-' + document.id + '" value="' + campaign.id + '">')
-            });
-
-            //set category options (done here so we have document id in option which is easier to grab on click)
-            $.each(categories, function (key, category) {
-                $('.categories-' + document.id).append('<label for="campaign-option-' + category.id + '">' + category.title + '</label><input class="category-option" type="checkbox" id="category-option-' + document.id + '" value="' + category.id + '">')
-            });
-
-            //set platform options (done here so we have document id in option which is easier to grab on click)
-            $.each(platforms, function (key, platform) {
-                $('.platforms-' + document.id).append('<label for="platform-option-' + platform.id + '">' + platform.title + '</label><input class="platform-option" type="checkbox" id="platform-option-' + document.id + '" value="' + platform.id + '">');
-            });
-        });
-
-        panelActionsInit();
- */
