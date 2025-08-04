@@ -30,7 +30,7 @@ add_action('admin_enqueue_scripts', 'my_plugin_enqueue_admin_scripts');
 /*add_action('admin_post_dp_export_action', 'dp_export_data');
 add_action('admin_footer', 'export_button');*/
 
-/* Ajax Actions */
+/* Administrative Ajax Actions */
 add_action('wp_ajax_dp_campaign', 'wp_ajax_dp_campaign');
 add_action('wp_ajax_dp_category', 'wp_ajax_dp_category');
 add_action('wp_ajax_dp_document', 'wp_ajax_dp_document');
@@ -38,6 +38,12 @@ add_action('wp_ajax_dp_platform', 'wp_ajax_dp_platform');
 add_action('wp_ajax_dp_doc_cam', 'wp_ajax_dp_doc_cam');
 add_action('wp_ajax_dp_doc_cat', 'wp_ajax_dp_doc_cat');
 add_action('wp_ajax_dp_doc_plat', 'wp_ajax_dp_doc_plat');
+
+/* Shortcode Ajax Actions */
+add_action('wp_ajax_dp_shortcode_campaign', 'wp_ajax_dp_shortcode_campaign');
+add_action('wp_ajax_dp_shortcode_category', 'wp_ajax_dp_shortcode_category');
+add_action('wp_ajax_dp_shortcode_platform', 'wp_ajax_dp_shortcode_platform');
+add_action('wp_ajax_dp_shortcode_document', 'wp_ajax_dp_shortcode_document');
 
 function dp_activate()
 {

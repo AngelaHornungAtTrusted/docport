@@ -27,6 +27,8 @@
     }
 
     const campaignTableInit = function (data) {
+        console.log('campaingTableInit');
+
         //clear table
         $campaignTable[0].innerHTML = "";
 
@@ -36,7 +38,7 @@
 
             $campaignTable.append('<tr>' +
                 '<td><input class="ctitle" type="text" id="campaign-title-' + campaign.id + '" value="' + campaign.title + '"></td>' +
-                '<td><input class="cactive" type="checkbox" id="campaign-active-' + campaign.id + '" ' + checked + '></td>' +
+                '<td><input class="cmactive" type="checkbox" id="campaign-active-' + campaign.id + '" ' + checked + '></td>' +
                 '<td><a class="button button-secondary campaign-copy" id="campaign-copy-' + campaign.id + '" style="background-color: orange; color: white;"><i class="fa fa-copy"></i></a>' +
                 '<a class="button button-secondary campaign-delete" id="campaign-delete-' + campaign.id + '" style="background-color: red; color: white;"><i class="fa fa-trash danger"></i></a></td>' +
                 '</tr>')
@@ -44,13 +46,14 @@
 
         //reset actions
         $('.ctitle').off('change').on('change', campaignUpdate);
-        $('.cactive').off('click').on('click', campaignUpdate);
+        $('.cmactive').off('click').on('click', campaignUpdate);
         $('.campaign-copy').off('click').on('click', campaignCopy);
         $('.campaign-delete').off('click').on('click', campaignDelete);
     }
 
     const campaignUpdate = function (e) {
-        $.post( DP_AJAX_URL, {
+        console.log('campaignUpdate');
+        $.post(DP_AJAX_URL, {
             action: "dp_campaign",
             data: {
                 'campaignId': e.currentTarget.id.split('-')[2],

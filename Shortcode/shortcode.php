@@ -7,16 +7,18 @@
     CATEOGRYID = '<?php echo $categoryId; ?>';
     PLATFORMID = '<?php echo $platformId; ?>';
 </script>
-<div class="pp-product-panel">
+<div class="row">
     <div class="row col-md-12">
         <?php
         if ($campaignId == 0) {
             ?>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="pp-campaign-select">Select
+                    <label for="dp-campaign-select" hidden>Select
                         Campaign</label>
-                    <select id="pp-campaign-select"></select>
+                    <select id="dp-campaign-select">
+                        <option selected disabled value="0">Select Campaign</option>
+                    </select>
                 </div>
             </div>
             <?php
@@ -27,9 +29,11 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <!-- if zero grab all & display, otherwise set value and hide element -->
-                    <label for="pp-cateogry-select">Select
+                    <label for="dp-category-select" hidden>Select
                         Category</label>
-                    <select id="pp-cateogry-select"></select>
+                    <select id="dp-category-select">
+                        <option selected disabled value="0">Select Category</option>
+                    </select>
                 </div>
             </div>
             <?php
@@ -40,13 +44,20 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <!-- if zero grab all & display, otherwise set value and hide element -->
-                    <label for="pp-platform-select">Select
+                    <label for="dp-platform-select" hidden>Select
                         Platform</label>
-                    <select id="pp-platform-select"></select>
+                    <select id="dp-platform-select">
+                        <option selected disabled value="0">Select Platform</option>
+                    </select>
                 </div>
             </div>
             <?php
         }
         ?>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12" id="dp-product-panel">
+
     </div>
 </div>
