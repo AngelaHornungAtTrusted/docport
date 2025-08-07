@@ -40,10 +40,8 @@ add_action('wp_ajax_dp_doc_cat', 'wp_ajax_dp_doc_cat');
 add_action('wp_ajax_dp_doc_plat', 'wp_ajax_dp_doc_plat');
 
 /* Shortcode Ajax Actions */
-add_action('wp_ajax_dp_shortcode_campaign', 'wp_ajax_dp_shortcode_campaign');
-add_action('wp_ajax_dp_shortcode_category', 'wp_ajax_dp_shortcode_category');
-add_action('wp_ajax_dp_shortcode_platform', 'wp_ajax_dp_shortcode_platform');
 add_action('wp_ajax_dp_shortcode_document', 'wp_ajax_dp_shortcode_document');
+add_action('wp_ajax_dp_shortcode_filters', 'wp_ajax_dp_shortcode_filters');
 
 function dp_activate()
 {

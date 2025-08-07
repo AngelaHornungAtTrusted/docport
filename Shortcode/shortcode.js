@@ -6,79 +6,67 @@
         $categorySelect = $('#dp-category-select');
         $platformSelect = $('#dp-platform-select');
 
-        getCamaigns();
-        getCategories();
-        getPlatforms();
+        documentQuery();
+        getFilters();
     }
 
     /* Campaign Management */
-    const getCamaigns = function () {
+    const getFilters = function () {
         $.get(DP_AJAX_URL, {
-            action: 'dp_shortcode_campaign',
+            action: 'dp_shortcode_filters',
+            data: {
+                'camId': CAMPAIGNID,
+                'catId': CATEGORYID,
+                'platId': PLATFORMID
+            }
         }, function(response){
             if (response.status === 'success') {
-                initCampaigns(response.data);
+                initFilters(response.data);
             } else {
                 toastr.error(response.message);
             }
         });
     }
 
-    const initCampaigns = function (campaigns) {
-        $.each(campaigns, function(key, campaign){
-             $campaignSelect.append('<option class="campaign-select-option" id="campaign-' + campaign.id + '" value="' + campaign.id + '">' + campaign.title + '</option>');
+    const initFilters = function (filters) {
+        $.each(filters, function(key, filterArray){
+            $.each(filterArray, function(fKey, filter){
+                switch (key) {
+                    case 'campaigns':
+                        if (CAMPAIGNID == 0) {
+                            $campaignSelect.append('<option class="campaign-select-option" id="campaign-' + filter.cam_id + '" value="' + filter.cam_id + '">' + filter.title + '</option>');
+                        }
+                        break;
+                    case 'categories':
+                        if (CATEGORYID == 0) {
+                            $categorySelect.append('<option class="category-select-option" id="category-' + filter.cat_id + '" value="' + filter.cat_id + '">' + filter.title + '</option>');
+                        }
+                        break;
+                    case 'platforms':
+                        if (PLATFORMID == 0) {
+                            $platformSelect.append('<option class="platform-select-option" id="platform-' + filter.plat_id + '" value="' + filter.plat_id + '">' + filter.title + '</option>');
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            });
         });
 
-       $campaignSelect.off('change').on('change', function(e){
-            CAMPAIGNID = e.currentTarget.value;
-            documentQuery();
-        });
-    }
-
-    /* Category Management */
-    const getCategories = function (){
-        $.get(DP_AJAX_URL, {
-            action: 'dp_shortcode_category'
-        }, function(response){
-            if (response.status === 'success') {
-                initCategories(response.data);
-            } else {
-                toastr.error(response.message);
-            }
-        })
-    }
-
-    const initCategories = function (categories) {
-        $.each(categories, function(key, category){
-            $categorySelect.append('<option class="category-select-optioin" id="category-' + category.id + '" value="' + category.id + '">' + category.title + '</option>');
-        });
-
-        $categorySelect.off('change').on('change', function(e){
-            CATEOGRYID = e.currentTarget.value;
-            documentQuery();
-        });
-    }
-
-    /* Platform Management */
-    const getPlatforms = function () {
-        $.get(DP_AJAX_URL, {
-            'action': 'dp_shortcode_platform'
-        }, function(response){
-            if (response.status === 'success') {
-                initPlatforms(response.data);
-            } else {
-                toastr.error(response.message);
-            }
-        });
-    }
-
-    const initPlatforms = function(platforms) {
-        $.each(platforms, function(key, platform){
-            $platformSelect.append('<option class="platform-select-option" id="platform-' + platform.id + '" value="' + platform.id + '">' + platform.title + '</option>')
-        });
-
-        $platformSelect.off('change').on('change', function(e) {
-            PLATFORMID = e.currentTarget.value;
+       $('.dp-select').off('change').on('change', function(e){
+           switch (e.currentTarget.id.split('-')[1]) {
+               case 'campaign':
+                   CAMPAIGNID = e.currentTarget.value;
+                   break;
+               case 'category':
+                   CATEGORYID = $(this).val();
+                   break;
+               case 'platform':
+                   PLATFORMID = $(this).val();
+                   break;
+               default:
+                   break;
+           }
             documentQuery();
         });
     }
@@ -89,7 +77,7 @@
             action: 'dp_shortcode_document',
             data: {
                 'camId': CAMPAIGNID,
-                'catId': CATEOGRYID,
+                'catId': CATEGORYID,
                 'platId': PLATFORMID
             }
         }, function(response){
