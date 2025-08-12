@@ -42,6 +42,8 @@ add_action('wp_ajax_dp_doc_plat', 'wp_ajax_dp_doc_plat');
 /* Shortcode Ajax Actions */
 add_action('wp_ajax_dp_shortcode_document', 'wp_ajax_dp_shortcode_document');
 add_action('wp_ajax_dp_shortcode_filters', 'wp_ajax_dp_shortcode_filters');
+add_action('wp_ajax_nopriv_dp_shortcode_document', 'wp_ajax_dp_shortcode_document');
+add_action('wp_ajax_nopriv_dp_shortcode_filters', 'wp_ajax_dp_shortcode_filters');
 
 function dp_activate()
 {

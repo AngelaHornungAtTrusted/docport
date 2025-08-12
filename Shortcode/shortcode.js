@@ -5,6 +5,7 @@
         $campaignSelect = $('#dp-campaign-select');
         $categorySelect = $('#dp-category-select');
         $platformSelect = $('#dp-platform-select');
+        $panel = $('#dp-document-panel');
 
         documentQuery();
         getFilters();
@@ -83,10 +84,25 @@
         }, function(response){
             if (response.status === 'success') {
                 console.log(response.data);
+                documentInit(response.data);
             } else {
                 toastr.error(response.message);
             }
         })
+    }
+
+    const documentInit = function (documents) {
+        $panel.empty();
+        $.each(documents, function(key, document){
+            $panel.append('<div class="col-md-3" style="border-right: 1px; border-color: black; border-style: solid;">' +
+                '<a href="' + document.path + '" download>' +
+                '<img class="center" src="' + document.thumbnail + '" style="min-width: 100%; max-height: 100px">' +
+                '</a></br>' +
+                '<div class="container" style="width: 100%; text-align: center;">' +
+                '<a class="h6" href="' + document.path + '" download>' + document.title + '</a>' +
+                '</div>' +
+                '</div>')
+        });
     }
 
     $(document).ready(function(){

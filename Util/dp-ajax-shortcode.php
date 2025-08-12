@@ -1,5 +1,7 @@
 <?php
 
+// todo figure out how to allow public access, admin-ajax blocks non-admin accounts
+
 /* Shortcode Tables Retrieval */
 function wp_ajax_dp_shortcode_document()
 {
@@ -34,8 +36,6 @@ function wp_ajax_dp_shortcode_document()
 
             //combine into sql frankenstein
             $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOCUMENTS . $camJoin . $catJoin . $platJoin . $camWhere . $catWhere . $platWhere);
-            var_dump($data);
-            die();
 
             $response->code = 200;
             $response->status = 'success';
