@@ -40,6 +40,7 @@ define('DP_TABLE_SETTINGS', DP_DB_PREFIX . 'settings');
 
 //statistical tables
 define('DP_TABLE_DOWNLOADS', DP_DB_PREFIX . 'downloads');
+define('DP_TABLE_DOWNLOAD_DATES', DP_DB_PREFIX . 'download_dates');
 define('DP_TABLE_USERS', DP_DB_PREFIX . 'users');
 
 //data constants

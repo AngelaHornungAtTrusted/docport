@@ -95,6 +95,13 @@ class DbTableManager
         create_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         update_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         PRIMARY KEY  (id)
+        ) $charset_collate;
+        CREATE TABLE " . DP_TABLE_DOWNLOAD_DATES . "(
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        doc_id mediumint(9) NOT NULL DEFAULT '0',
+        create_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+        update_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+        PRIMARY KEY  (id)
         ) $charset_collate;";
 
         $settingsTables = "CREATE TABLE " . DP_TABLE_SETTINGS . " (

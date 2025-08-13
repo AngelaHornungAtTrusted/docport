@@ -879,6 +879,9 @@ function wp_ajax_dp_doc_plat()
 
 /* Statistical Tables */
 //todo implement request handlers for statistical tables
+function wp_ajax_pp_downloads() {
+
+}
 
 /* Shortcode Tables Retrieval */
 function wp_ajax_dp_shortcode() {

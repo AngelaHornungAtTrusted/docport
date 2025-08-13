@@ -24,7 +24,6 @@ register_activation_hook(__FILE__, 'dp_activate');
 
 /* Actions */
 add_action('admin_menu', 'docport_menu');
-add_action('admin_enqueue_scripts', 'my_plugin_enqueue_admin_scripts');
 
 //todo clean implementations of this feature
 /*add_action('admin_post_dp_export_action', 'dp_export_data');
@@ -42,8 +41,10 @@ add_action('wp_ajax_dp_doc_plat', 'wp_ajax_dp_doc_plat');
 /* Shortcode Ajax Actions */
 add_action('wp_ajax_dp_shortcode_document', 'wp_ajax_dp_shortcode_document');
 add_action('wp_ajax_dp_shortcode_filters', 'wp_ajax_dp_shortcode_filters');
+add_action('wp_ajax_dp_shortcode_downloads', 'wp_ajax_dp_shortcode_downloads');
 add_action('wp_ajax_nopriv_dp_shortcode_document', 'wp_ajax_dp_shortcode_document');
 add_action('wp_ajax_nopriv_dp_shortcode_filters', 'wp_ajax_dp_shortcode_filters');
+add_action('wp_ajax_nopriv_dp_shortcode_downloads', 'wp_ajax_dp_shortcode_downloads');
 
 function dp_activate()
 {
@@ -84,18 +85,6 @@ function docport_page_content()
     <?php
 }
 
-//sets up export url for export button and admin.js
-function my_plugin_enqueue_admin_scripts($hook): void
-{
-    wp_enqueue_style('bootstrap-css', DP_ASSETS_URL . '/bootstrap/css/bootstrap.css"');
-    wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"');
-
-    wp_enqueue_script('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/toastr.js', array('jquery'));
-    wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css');
-
-    wp_enqueue_script('fontawesome', 'https://kit.fontawesome.com/9548fb5f16.js');
-}
-
 add_shortcode('docport', 'docport_shortcode');
 
 function docport_shortcode($atts = [], $content = null) {
@@ -113,6 +102,8 @@ function docport_shortcode($atts = [], $content = null) {
             <?php wp_enqueue_script('shortcode-js', plugin_dir_url(__FILE__) . 'Shortcode/shortcode.js'); ?>
             <?php wp_enqueue_style('bootstrap-css', DP_ASSETS_URL . '/bootstrap/css/bootstrap.css"'); ?>
             <?php wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"'); ?>
+            <?php wp_enqueue_script('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/toastr.js', array('jquery'));
+            wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css'); ?>
         </div>
         <?php
     } else {

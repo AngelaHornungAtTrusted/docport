@@ -1,7 +1,4 @@
 <?php
-
-// todo figure out how to allow public access, admin-ajax blocks non-admin accounts
-
 /* Shortcode Tables Retrieval */
 function wp_ajax_dp_shortcode_document()
 {
@@ -80,6 +77,53 @@ function wp_ajax_dp_shortcode_filters()
         $response->code = 400;
         $response->status = 'error';
         $response->message = 'Invalid Request Type';
+    }
+
+    wp_send_json($response);
+}
+
+function wp_ajax_dp_shortcode_downloads() {
+    global $wpdb;
+    $response = new stdClass();
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (!isset($_POST['data']['docId'])) {
+            $response->code = 400;
+            $response->status = 'error';
+            $response->message = 'Missing Parameters';
+        } else {
+            $data = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOWNLOADS . " WHERE doc_id = " . intval($_POST['data']['docId']));
+
+            if (sizeOf($data) > 0) {
+                $wpdb->update(DP_TABLE_DOWNLOADS, array(
+                    'downloads' => $data[0]->downloads + 1,
+                    'update_date' => date('Y-m-d H:i:s')
+                ), array(
+                    'doc_id' => intval($_POST['data']['docId'])
+                ));
+            } else {
+                $wpdb->insert(DP_TABLE_DOWNLOADS, array(
+                    'doc_id' => $_POST['data']['docId'],
+                    'downloads' => 1,
+                    'create_date' => date('Y-m-d H:i:s'),
+                    'update_date' => date('Y-m-d H:i:s')
+                ));
+            }
+
+            $wpdb->insert(DP_TABLE_DOWNLOAD_DATES, array(
+                'doc_id' => $_POST['data']['docId'],
+                'create_date' => date('Y-m-d H:i:s'),
+                'update_date' => date('Y-m-d H:i:s')
+            ));
+
+            $response->code = 200;
+            $response->status = 'success';
+            $response->message = "Download Information Sent";
+        }
+    } else {
+        $response->code = 400;
+        $response->status = 'error';
+        $response->message = 'Invalid Request';
     }
 
     wp_send_json($response);

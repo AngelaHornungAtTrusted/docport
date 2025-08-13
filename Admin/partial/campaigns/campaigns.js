@@ -27,8 +27,6 @@
     }
 
     const campaignTableInit = function (data) {
-        console.log('campaingTableInit');
-
         //clear table
         $campaignTable[0].innerHTML = "";
 
@@ -52,7 +50,6 @@
     }
 
     const campaignUpdate = function (e) {
-        console.log('campaignUpdate');
         $.post(DP_AJAX_URL, {
             action: "dp_campaign",
             data: {

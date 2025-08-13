@@ -69,8 +69,6 @@
     }
 
     const documentPanelInit = function (data) {
-        console.log(campaigns);
-
         //todo find more efficient manner of doing this
         $.each(data.documents, function (key, document) {
             //set document row
@@ -101,14 +99,12 @@
             });
 
             $.each(data.cats, function(key, cat){
-                console.log(cat);
                 if (cat.doc_id === document.id) {
                     $('#category-option-' + cat.cat_id + document.id).attr('checked', true);
                 }
             });
 
             $.each(data.plats, function(key, plat) {
-                console.log(plat);
                 if (plat.doc_id === document.id) {
                     $('#platform-option-' + plat.plat_id + document.id).attr('checked', true);
                 }
@@ -154,7 +150,7 @@
             }
         }, function (response){
             if (response.status === 'success') {
-                console.log(response.message);
+
             } else {
                 toastr.error(response.message);
             }
@@ -171,7 +167,7 @@
             }
         }, function (response) {
             if (response.status === 'success') {
-                console.log(response.message);
+
             } else {
                 toastr.error(response.message);
             }
@@ -179,8 +175,6 @@
     }
 
     const documentPlatformUpdate = function (e) {
-        console.log(e.currentTarget);
-
         $.post(DP_AJAX_URL, {
             action: 'dp_doc_plat',
             data: {

@@ -95,14 +95,32 @@
         $panel.empty();
         $.each(documents, function(key, document){
             $panel.append('<div class="col-md-3" style="border-right: 1px; border-color: black; border-style: solid;">' +
-                '<a href="' + document.path + '" download>' +
+                '<a class="document-download" id="image-download-' + document.id + '" href="' + document.path + '" download>' +
                 '<img class="center" src="' + document.thumbnail + '" style="min-width: 100%; max-height: 100px">' +
                 '</a></br>' +
                 '<div class="container" style="width: 100%; text-align: center;">' +
-                '<a class="h6" href="' + document.path + '" download>' + document.title + '</a>' +
+                '<a class="h6 document-download" id="title-download-' + document.id + '" href="' + document.path + '" download>' + document.title + '</a>' +
                 '</div>' +
                 '</div>')
         });
+
+        $('.document-download').off('click').on('click', stats);
+    }
+
+    const stats = function (e) {
+        console.log(e.currentTarget.id.split('-')[2]);
+        $.post(DP_AJAX_URL, {
+            action: 'dp_shortcode_downloads',
+            data: {
+                'docId': e.currentTarget.id.split('-')[2]
+            }
+        }, function(response){
+            if (response.status === 'success') {
+                console.log(response.message);
+            } else {
+                toastr.error(response.message);
+            }
+        })
     }
 
     $(document).ready(function(){
