@@ -21,6 +21,7 @@ use Util\DbTableManager;
 
 /* Plugin Activation & Installation Management Hooks */
 register_activation_hook(__FILE__, 'dp_activate');
+add_action('admin_enqueue_scripts', 'my_plugin_enqueue_admin_scripts');
 
 /* Actions */
 add_action('admin_menu', 'docport_menu');
@@ -37,6 +38,7 @@ add_action('wp_ajax_dp_platform', 'wp_ajax_dp_platform');
 add_action('wp_ajax_dp_doc_cam', 'wp_ajax_dp_doc_cam');
 add_action('wp_ajax_dp_doc_cat', 'wp_ajax_dp_doc_cat');
 add_action('wp_ajax_dp_doc_plat', 'wp_ajax_dp_doc_plat');
+add_action('wp_ajax_dp_downloads', 'wp_ajax_dp_downloads');
 
 /* Shortcode Ajax Actions */
 add_action('wp_ajax_dp_shortcode_document', 'wp_ajax_dp_shortcode_document');
@@ -61,6 +63,11 @@ function dp_activate()
     }
 }
 
+function my_plugin_enqueue_admin_scripts($hook): void
+{
+    wp_enqueue_script('fontawesome', 'https://kit.fontawesome.com/9548fb5f16.js');
+}
+
 function docport_menu()
 {
     add_menu_page(
@@ -80,6 +87,9 @@ function docport_page_content()
     <div class="wrap">
         <?php wp_enqueue_style('bootstrap-css', DP_ASSETS_URL . '/bootstrap/css/bootstrap.css"'); ?>
         <?php wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"'); ?>
+        <?php wp_enqueue_script('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/toastr.js', array('jquery')); ?>
+        <?php wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css'); ?>
+        <?php wp_enqueue_script('chartjs', plugin_dir_url(__FILE__) . 'Assets/chartjs/dist/chart.umd.min.js', array('jquery')); ?>
         <?php include(plugin_dir_path(__FILE__) . 'Admin/admin.php'); ?>
     </div>
     <?php
@@ -102,8 +112,8 @@ function docport_shortcode($atts = [], $content = null) {
             <?php wp_enqueue_script('shortcode-js', plugin_dir_url(__FILE__) . 'Shortcode/shortcode.js'); ?>
             <?php wp_enqueue_style('bootstrap-css', DP_ASSETS_URL . '/bootstrap/css/bootstrap.css"'); ?>
             <?php wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"'); ?>
-            <?php wp_enqueue_script('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/toastr.js', array('jquery'));
-            wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css'); ?>
+            <?php wp_enqueue_script('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/toastr.js', array('jquery')); ?>
+            <?php wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css'); ?>
         </div>
         <?php
     } else {

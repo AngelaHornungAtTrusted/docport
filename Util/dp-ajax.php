@@ -879,46 +879,32 @@ function wp_ajax_dp_doc_plat()
 
 /* Statistical Tables */
 //todo implement request handlers for statistical tables
-function wp_ajax_pp_downloads() {
-
-}
-
-/* Shortcode Tables Retrieval */
-function wp_ajax_dp_shortcode() {
+function wp_ajax_dp_downloads() {
     global $wpdb;
     $response = new stdClass();
 
+    if (!current_user_can('administrator')) {
+        $response->code = 403;
+        $response->status = 'error';
+        $response->message = 'Unauthorized User';
+
+        wp_send_json($response);
+    }
+
     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-        if (isset($_GET['data']['docId'])) {
-            //grab specific doc
-            $docId = intval($_GET['data']['docId']);
-            $data = $wpdb->get_results('SELECT * FROM ' . DP_TABLE_DOCUMENTS . " WHERE id = " . $docId);
+        //todo rid of need for $downloads and its associated table utilizing count
 
-            $response->code = 200;
-            $response->status = 'success';
-            $response->message = "Document Grabbed";
-            $response->data = $data;
-        } else {
-            //grab docs by some association type
-            $table = (isset($_GET['data']['camId'])) ? DP_TABLE_DOCUMENT_CAMPAIGNS : ((isset($_GET['data']['catId'])) ? DP_TABLE_DOCUMENT_CATEGORIES : DP_TABLE_DOCUMENT_PLATFORMS);
-            $matchId = (isset($_GET['data']['camId'])) ? 'cam_id' : ((isset($_GET['data']['catId'])) ? 'cat_id' : 'plat_id');
-            $id = (isset($_GET['data']['camId'])) ? intval($_GET['data']['camId']) : ((isset($_GET['data']['catId'])) ? intval($_GET['data']['catId']) : intval($_GET['data']['platId']));
+        $dateStart = (isset($_GET['dateStart']) && intval($_GET['dateStart']) > 0) ? " WHERE create_date >= '" . sanitize_text_field($_GET['dateStart']) : '';
+        $dateEnd = (isset($_GET['dateEnd']) && intval($_GET['dateEnd']) > 0) ? ((isset($_GET['dateStart']) && intval($_GET['dateStart']) > 0) ? " AND create_date <= " . sanitize_text_field($_GET['dateEnd']) : " WHERE create_date <= " . sanitize_text_field($_GET['dateEnd'])) : '';
+        $docId = (isset($_GET['docId'])) ? (($dateStart != "" || $dateEnd != "") ? " AND doc_id = " . intval($_GET['docId']) : " WHERE doc_id = " . intval($_GET['docId'])) : "";
 
-            //grab array of documents ids
-            $docIds = $wpdb->get_results('SELECT * FROM ' . $table . " WHERE " . $matchId . " = " . $id);
+        $dates = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOWNLOAD_DATES . $dateStart . $dateEnd . $docId);
+        $downloads = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOWNLOADS . " LEFT JOIN " . DP_TABLE_DOCUMENTS . " ON " . DP_TABLE_DOCUMENTS . ".id = doc_id ORDER BY downloads DESC LIMIT 10");
+        //$documents = $wpdb->get_results("SELECT * FROM " . DP_TABLE_DOWNLOAD_DATES . " LEFT JOIN " . DP_TABLE_DOCUMENTS . " ON " . DP_TABLE_DOCUMENTS . ".doc_id = id");
 
-            $data = [];
-
-            foreach ($docIds as $docId) {
-                //todo investigate cleaner way to do this
-                $data[$docId] = $wpdb->get_results('SELECT * FROM ' . $table . " WHERE id = " . intval($docId));
-            }
-
-            $response->code = 200;
-            $response->status = 'success';
-            $response->message = "Documents Grabbed";
-            $response->data = $data;
-        }
+        $response->code = 200;
+        $response->status = 'success';
+        $response->data = [$dates, $downloads];
     } else {
         $response->code = 400;
         $response->status = 'error';
