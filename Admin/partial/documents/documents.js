@@ -234,7 +234,7 @@
                     if (response.status === 'success') {
                         location.reload();
                     } else {
-                        toastr.success(response.message);
+                        toastr.error(response.message);
                     }
                 })
             });
