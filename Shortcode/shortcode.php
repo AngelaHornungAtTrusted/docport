@@ -6,6 +6,7 @@
     CAMPAIGNID = '<?php echo $campaignId; ?>';
     CATEGORYID = '<?php echo $categoryId; ?>';
     PLATFORMID = '<?php echo $platformId; ?>';
+    FORM = '<?php echo $form; ?>';
 </script>
 <div class="row">
     <div class="row col-md-12">

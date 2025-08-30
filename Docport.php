@@ -100,11 +100,12 @@ add_shortcode('docport', 'docport_shortcode');
 function docport_shortcode($atts = [], $content = null) {
 
     //make sure we have what we need
-    if (sizeof($atts) > 2) {
+    if (sizeof($atts) > 3) {
         //used to determine what we load
         $campaignId = intval($atts[0]);
         $categoryId = intval($atts[1]);
         $platformId = intval($atts[2]);
+        $form = intval($atts[3]);
 
         ?>
         <div class="wrap">
@@ -114,13 +115,14 @@ function docport_shortcode($atts = [], $content = null) {
             <?php wp_enqueue_script('bootstrap-js', DP_ASSETS_URL . '/bootstrap/js/bootstrap.js"'); ?>
             <?php wp_enqueue_script('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/toastr.js', array('jquery')); ?>
             <?php wp_enqueue_style('toastr', plugin_dir_url(__FILE__) . 'Assets/toastr/build/toastr.css'); ?>
+            <?php wp_enqueue_script('popup-js', plugin_dir_url(__FILE__) . 'Assets/popup/popup.js', array('jquery')); ?>
         </div>
         <?php
     } else {
         ?>
         <div class="wrap">
             <h2>Missing Parameters</h2>
-            <p>The shortcode template is as follows: [docport campaign_id category_id platform_id]</p>
+            <p>The shortcode template is as follows: [docport campaign_id category_id platform_id form_true]</p>
             <p>If you want all campaigns, categories or platforms to present and an associated select for filtering, insert
             a zero for one of the ids.</p>
         </div>

@@ -83,7 +83,6 @@
             }
         }, function(response){
             if (response.status === 'success') {
-                console.log(response.data);
                 documentInit(response.data);
             } else {
                 toastr.error(response.message);
@@ -105,6 +104,17 @@
         });
 
         $('.document-download').off('click').on('click', stats);
+
+        if (FORM != 0) {
+            //this is to require the user submit a form to download the item
+            $('.document-download').off('click').on('click', function (e) {
+                //refuse to download unless user submits the form
+                e.preventDefault();
+
+                //hand document location over to download for user after form submission
+                handleUserForm(e.currentTarget.href);
+            });
+        }
     }
 
     const stats = function (e) {
@@ -121,6 +131,20 @@
                 toastr.error(response.message);
             }
         })
+    }
+
+    const handleUserForm = function(document) {
+        console.log(document);
+
+        myPopup = new Popup({
+            id: "popup",
+            title: "Download Form",
+            content: '<div class="row">' +
+                '<p>temp content</p>' +
+                '</div>',
+        });
+
+        myPopup.show();
     }
 
     $(document).ready(function(){
