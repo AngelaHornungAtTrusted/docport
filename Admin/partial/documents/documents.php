@@ -44,7 +44,8 @@
         <button class="" id="documentUpload">Upload Files</button>
     </div>
     <div class="col-md-9">
-        <p style="margin-top: 5px;">On this page you can manage your portfolio documents and what campaigns/categories they're associated with.</p>
+        <p style="margin-top: 5px;">On this page you can manage your portfolio documents and what campaigns/categories they're associated with.
+            The buttons under action can either delete the document or give the document a custom thumbnail.</p>
     </div>
 </div>
 <div class="row" style="margin-top: 15px;">

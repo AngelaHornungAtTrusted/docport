@@ -77,9 +77,11 @@
                 '<td><div class="dropdown"><button class="document-campaign-select" id="document-campaign-' + document.id + '">Select Campaigns</button><div class="options-campaigns dropdown-content campaigns-' + document.id + '"></div></div></td>' +
                 '<td><div class="dropdown"><button class="document-category-select" id="document-category-' + document.id + '">Select Categories</button><div class="options-categories dropdown-content categories-' + document.id + '"></div></div></td>' +
                 '<td><div class="dropdown"><button class="document-platform-select" id="document-platform-' + document.id + '">Select Platforms</button><div class="options-platforms dropdown-content platforms-' + document.id + '"></div></div></td>' +
-                '<td><a class="btn btn-danger document-delete" id="document-delete-' + document.id + '" style="background-color: red; color: white;"><i class="fa fa-trash"></i></a></td>' +
+                '<td><a class="btn btn-danger document-delete" id="document-delete-' + document.id + '" style="background-color: red; color: white;"><i class="fa fa-trash"></i></a>' +
+                '<a class="btn btn-secondary document-thumbnail" id="document-thumbnail-' + document.id + '"><i class="fa fa-image"></i></a></td>' +
                 '</tr>');
 
+            /* todo append options once, run through documents twice to set selects, should be more efficient */
             $.each(campaigns, function (key, campaign) {
                 $('.campaigns-' + document.id).append('<label for="campaign-option-' + campaign.id + document.id + '">' + campaign.title + '</label><input class="campaign-option" type="checkbox" id="campaign-option-' + campaign.id + document.id + '" value="' + campaign.id + '">');
             });
@@ -135,7 +137,9 @@
             $('.platforms-' + id).toggle('show');
 
             $('.platform-option').off('click').on('click', documentPlatformUpdate);
-        })
+        });
+
+        $('.document-thumbnail').off('click').on('click', openMediaUploader);
 
         documentDeleteInit();
     }
@@ -208,8 +212,12 @@
         })
     }
 
-    const openMediaUploader = function () {
+    const openMediaUploader = function (e) {
         'use strict';
+
+        let mode = (e.currentTarget.id === 'documentUpload') ? 'document' : 'image';
+        console.log(e.currentTarget.id);
+        console.log(mode);
 
         var uploader;
 
@@ -223,6 +231,8 @@
             var selections = uploader.state().get('selection').toJSON();
 
             $.each(selections, function (key, selection) {
+                console.log(selection);
+
                 $.post(DP_AJAX_URL, {
                     action: 'dp_document',
                     data: {
